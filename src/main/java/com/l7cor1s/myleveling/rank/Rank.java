@@ -3,24 +3,31 @@ package com.l7cor1s.myleveling.rank;
 import java.util.Locale;
 
 /**
- * Player combat ranks. Thresholds are total XP required to reach the rank.
+ * Player ranks. Thresholds are total XP required; progression is intentionally slow.
+ * Skill points are granted when reaching the rank (not for starting E).
  */
 public enum Rank {
-    E(0),
-    D(100),
-    C(350),
-    B(800),
-    A(1600),
-    S(3200);
+    E(0, 0),
+    D(5_000, 2),
+    C(20_000, 2),
+    B(60_000, 3),
+    A(150_000, 3),
+    S(400_000, 4);
 
     private final int requiredXp;
+    private final int skillPointsOnReach;
 
-    Rank(int requiredXp) {
+    Rank(int requiredXp, int skillPointsOnReach) {
         this.requiredXp = requiredXp;
+        this.skillPointsOnReach = skillPointsOnReach;
     }
 
     public int getRequiredXp() {
         return requiredXp;
+    }
+
+    public int getSkillPointsOnReach() {
+        return skillPointsOnReach;
     }
 
     public String getDisplayName() {
@@ -37,9 +44,6 @@ public enum Rank {
         return this == S;
     }
 
-    /**
-     * Highest rank whose required XP is less than or equal to {@code xp}.
-     */
     public static Rank fromXp(int xp) {
         Rank result = E;
         for (Rank rank : values()) {
@@ -52,9 +56,6 @@ public enum Rank {
         return result;
     }
 
-    /**
-     * XP still needed to reach the next rank, or {@code 0} at max rank.
-     */
     public static int xpToNextRank(int xp) {
         Rank current = fromXp(xp);
         if (current.isMax()) {

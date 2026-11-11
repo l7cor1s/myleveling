@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:villager",
+    "minecraft:wandering_trader",
+    "minecraft:armor_stand",
+    { "id": "mca:villager", "required": false },
+    { "id": "mca:griffith", "required": false },
+    { "id": "mca:cultist", "required": false }
+  ]
+}

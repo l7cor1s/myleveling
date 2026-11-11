@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:warden",
+    { "id": "#c:bosses", "required": false },
+    { "id": "cataclysm:ender_guardian", "required": false },
+    { "id": "cataclysm:netherite_monstrosity", "required": false },
+    { "id": "cataclysm:the_harbinger", "required": false },
+    { "id": "cataclysm:the_leviathan", "required": false },
+    { "id": "cataclysm:ancient_remnant", "required": false },
+    { "id": "bosses_of_mass_destruction:void_blossom", "required": false },
+    { "id": "bosses_of_mass_destruction:lich", "required": false },
+    { "id": "bosses_of_mass_destruction:gauntlet", "required": false },
+    { "id": "bosses_of_mass_destruction:obsidilith", "required": false },
+    { "id": "irons_spellbooks:dead_king", "required": false },
+    { "id": "irons_spellbooks:dead_king_corpse", "required": false },
+    { "id": "alexscaves:hullbreaker", "required": false },
+    { "id": "alexscaves:forsaken", "required": false },
+    { "id": "alexsmobs:void_worm", "required": false }
+  ]
+}

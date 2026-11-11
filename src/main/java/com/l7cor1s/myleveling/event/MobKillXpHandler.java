@@ -2,6 +2,7 @@ package com.l7cor1s.myleveling.event;
 
 import com.l7cor1s.myleveling.MyLeveling;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
+import com.l7cor1s.myleveling.xp.MobXpCalculator;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,24 +26,16 @@ public final class MobKillXpHandler {
             return;
         }
 
-        // Players do not grant leveling XP (PvP out of scope for stage 1).
+        // PvP and MCA/villager kills are excluded from leveling XP.
         if (victim instanceof Player) {
             return;
         }
 
-        int xp = calculateXp(victim);
+        int xp = MobXpCalculator.calculate(victim);
         if (xp <= 0) {
             return;
         }
 
         PlayerRankData.addXp(killer, xp);
-    }
-
-    /**
-     * Scales with mob toughness: roughly half of max health, at least 1.
-     * Bosses and tanky mobs therefore award more XP.
-     */
-    private static int calculateXp(LivingEntity victim) {
-        return Math.max(1, Math.round(victim.getMaxHealth() / 2.0f));
     }
 }

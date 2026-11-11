@@ -8,8 +8,8 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="l7cor1s"
 description='''
-Player rank and experience system for NeoForge 1.21.1.
-Earn XP by defeating mobs and climb ranks from E to S.
+Player ranks, combat XP tiers, and a skill tree for NeoForge 1.21.1.
+Soft-compatible with Create, Iron's Spells, Epic Fight, Apotheosis, MCA, Farmer's Delight.
 '''
 
 [[dependencies.${mod_id}]]
@@ -23,5 +23,55 @@ Earn XP by defeating mobs and climb ranks from E to S.
     modId="minecraft"
     type="required"
     versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+# Optional pack companions — never required to load MyLeveling.
+[[dependencies.${mod_id}]]
+    modId="create"
+    type="optional"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="irons_spellbooks"
+    type="optional"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="epicfight"
+    type="optional"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="apotheosis"
+    type="optional"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="mca"
+    type="optional"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="farmersdelight"
+    type="optional"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="kaleidoscope_cookery"
+    type="optional"
+    versionRange="[0,)"
     ordering="NONE"
     side="BOTH"
