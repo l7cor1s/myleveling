@@ -1,0 +1,6 @@
+{
+  "command.myleveling.rank.info": "Ранг: %s | Опыт: %s | До следующего (%s): %s XP",
+  "command.myleveling.rank.max": "Ранг: %s | Опыт: %s | Максимальный ранг достигнут",
+  "command.myleveling.rank.players_only": "Эту команду может использовать только игрок",
+  "message.myleveling.rank_up": "Повышение ранга! Теперь ваш ранг — %s"
+}
