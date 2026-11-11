@@ -1,6 +1,7 @@
 package com.l7cor1s.myleveling.rank;
 
 import com.l7cor1s.myleveling.attachment.ModAttachments;
+import com.l7cor1s.myleveling.network.ProgressSync;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,6 +65,7 @@ public final class PlayerRankData {
         }
 
         setProgress(player, updated);
+        ProgressSync.sendTo(player);
         return amount;
     }
 }

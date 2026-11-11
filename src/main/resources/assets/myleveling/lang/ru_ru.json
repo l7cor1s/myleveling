@@ -1,4 +1,18 @@
 {
+  "key.categories.myleveling": "MyLeveling",
+  "key.myleveling.open_skills": "Открыть дерево навыков",
+
+  "screen.myleveling.skills": "Дерево навыков",
+  "screen.myleveling.system_title": "SYSTEM",
+  "screen.myleveling.system_subtitle": "СТАТУС ИГРОКА",
+  "screen.myleveling.skill_points": "Очки навыков: %s",
+  "screen.myleveling.hint": "[K] Закрыть  ·  Клик по доступному навыку — открыть",
+  "screen.myleveling.tooltip_meta": "%s · Стоимость %s · Ранг %s+",
+  "screen.myleveling.tooltip_prereq": "Нужен: %s",
+  "screen.myleveling.tooltip_unlocked": "Открыт",
+  "screen.myleveling.tooltip_click": "Нажмите, чтобы открыть",
+  "screen.myleveling.tooltip_locked": "Закрыт",
+
   "command.myleveling.rank.info": "Ранг: %s | Опыт: %s | До следующего (%s): %s XP | Очки навыков: %s",
   "command.myleveling.rank.max": "Ранг: %s | Опыт: %s | Макс. ранг | Очки навыков: %s",
   "command.myleveling.rank.players_only": "Эту команду может использовать только игрок",
@@ -6,7 +20,7 @@
 
   "command.myleveling.skills.header": "Доступно очков навыков: %s",
   "command.myleveling.skills.entry": "  %s %s (стоимость %s, ранг %s+)",
-  "command.myleveling.skills.hint": "Используйте /skills unlock <id> или /skills info <id>",
+  "command.myleveling.skills.hint": "Клавиша K или /skills unlock <id>",
   "command.myleveling.skills.unknown": "Неизвестный навык: %s",
   "command.myleveling.skills.already": "Навык уже открыт: %s",
   "command.myleveling.skills.no_points": "Нужно %s очков навыков (у вас %s)",

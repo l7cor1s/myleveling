@@ -31,6 +31,11 @@ Branches: **Melee**, **Magic** (ISS-themed), **Engineering** (Create-themed), **
 - Effects use unique attribute modifiers (stack with Epic Fight / Apotheosis)
 - Progress (XP, points, unlocked skills) persists via data attachments (`copyOnDeath`)
 
+### System GUI
+- Press **K** to open the Solo Leveling–style skill tree
+- Glowing rank, XP bar, skill points, 4 vertical branches
+- Hover for details, click to unlock (validated on server)
+
 ### Commands
 - `/rank` — rank, XP, skill points
 - `/skills` / `/skills list [branch]` — tree overview
@@ -43,7 +48,7 @@ Branches: **Melee**, **Magic** (ISS-themed), **Engineering** (Create-themed), **
 ./gradlew build
 ```
 
-Jar: `build/libs/myleveling-0.2.0.jar`
+Jar: `build/libs/myleveling-0.3.0.jar`
 
 ## Layout
 

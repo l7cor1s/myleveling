@@ -1,6 +1,7 @@
 package com.l7cor1s.myleveling.skill;
 
 import com.l7cor1s.myleveling.attachment.ModAttachments;
+import com.l7cor1s.myleveling.network.ProgressSync;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
 import com.l7cor1s.myleveling.rank.Rank;
@@ -56,6 +57,7 @@ public final class PlayerSkillData {
         player.setData(ModAttachments.PLAYER_PROGRESS, updated);
 
         applySkillModifiers(player);
+        ProgressSync.sendTo(player);
         player.sendSystemMessage(Component.translatable(
                 "message.myleveling.skill_unlocked",
                 skill.getDisplayName()

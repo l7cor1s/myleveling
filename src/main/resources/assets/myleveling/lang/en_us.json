@@ -1,4 +1,18 @@
 {
+  "key.categories.myleveling": "MyLeveling",
+  "key.myleveling.open_skills": "Open Skill Tree",
+
+  "screen.myleveling.skills": "Skill Tree",
+  "screen.myleveling.system_title": "SYSTEM",
+  "screen.myleveling.system_subtitle": "PLAYER STATUS",
+  "screen.myleveling.skill_points": "Skill Points: %s",
+  "screen.myleveling.hint": "[K] Close  ·  Click available skills to unlock",
+  "screen.myleveling.tooltip_meta": "%s · Cost %s · Rank %s+",
+  "screen.myleveling.tooltip_prereq": "Requires: %s",
+  "screen.myleveling.tooltip_unlocked": "Unlocked",
+  "screen.myleveling.tooltip_click": "Click to unlock",
+  "screen.myleveling.tooltip_locked": "Locked",
+
   "command.myleveling.rank.info": "Rank: %s | XP: %s | Next (%s): %s XP | Skill points: %s",
   "command.myleveling.rank.max": "Rank: %s | XP: %s | Max rank | Skill points: %s",
   "command.myleveling.rank.players_only": "This command can only be used by a player",
@@ -6,7 +20,7 @@
 
   "command.myleveling.skills.header": "Skill points available: %s",
   "command.myleveling.skills.entry": "  %s %s (cost %s, rank %s+)",
-  "command.myleveling.skills.hint": "Use /skills unlock <id> or /skills info <id>",
+  "command.myleveling.skills.hint": "Press K or use /skills unlock <id>",
   "command.myleveling.skills.unknown": "Unknown skill: %s",
   "command.myleveling.skills.already": "Skill already unlocked: %s",
   "command.myleveling.skills.no_points": "Need %s skill points (you have %s)",
