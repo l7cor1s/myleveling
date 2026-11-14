@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "minecraft:item/arrow"
+    "layer0": "myleveling:item/scorpion_stinger"
   }
 }

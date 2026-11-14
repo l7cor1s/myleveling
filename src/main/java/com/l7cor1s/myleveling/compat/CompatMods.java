@@ -11,6 +11,7 @@ public final class CompatMods {
     public static final String EPIC_FIGHT = "epicfight";
     public static final String APOTHEOSIS = "apotheosis";
     public static final String MCA = "mca";
+    public static final String CURIOS = "curios";
     public static final String FARMERS_DELIGHT = "farmersdelight";
     public static final String KALEIDOSCOPE_COOKERY = "kaleidoscope_cookery";
 
@@ -27,6 +28,7 @@ public final class CompatMods {
         logIfPresent(EPIC_FIGHT, "Epic Fight");
         logIfPresent(APOTHEOSIS, "Apotheosis");
         logIfPresent(MCA, "MCA Reborn");
+        logIfPresent(CURIOS, "Curios");
         logIfPresent(FARMERS_DELIGHT, "Farmer's Delight");
         logIfPresent(KALEIDOSCOPE_COOKERY, "Kaleidoscope Cookery");
     }

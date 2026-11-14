@@ -4,7 +4,6 @@ import com.l7cor1s.myleveling.boss.BossAnimState;
 import com.l7cor1s.myleveling.boss.BossId;
 import com.l7cor1s.myleveling.boss.CatalogBossEntity;
 import com.l7cor1s.myleveling.boss.GateMonarchEntity;
-import com.l7cor1s.myleveling.boss.Kv2BossEntity;
 import com.l7cor1s.myleveling.boss.ModEntities;
 import com.l7cor1s.myleveling.boss.RankWardenEntity;
 import com.l7cor1s.myleveling.boss.ShadowMinionEntity;
@@ -24,63 +23,39 @@ public final class BossRenderers {
     private BossRenderers() {
     }
 
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(Kv2TankModel.LAYER, Kv2TankModel::createBodyLayer);
+    }
+
     public static void register(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.SHADOW_SCOUT.get(), BossRenderers::scout);
-        event.registerEntityRenderer(ModEntities.RANK_WARDEN.get(), BossRenderers::warden);
-        event.registerEntityRenderer(ModEntities.GATE_MONARCH.get(), BossRenderers::monarch);
+        event.registerEntityRenderer(ModEntities.SHADOW_SCOUT.get(), ctx -> plain(ctx, "myleveling:textures/entity/shadow_scout.png", 0.5f));
+        event.registerEntityRenderer(ModEntities.RANK_WARDEN.get(), ctx -> plain(ctx, "myleveling:textures/entity/rank_warden.png", 0.6f));
+        event.registerEntityRenderer(ModEntities.GATE_MONARCH.get(), ctx -> plain(ctx, "myleveling:textures/entity/gate_monarch.png", 0.7f));
         event.registerEntityRenderer(ModEntities.SHADOW_MINION.get(), BossRenderers::minion);
-        event.registerEntityRenderer(ModEntities.KV2.get(), BossRenderers::kv2);
+        event.registerEntityRenderer(ModEntities.KV2.get(), Kv2TankRenderer::new);
         event.registerEntityRenderer(ModEntities.DYNAMITE_PROJECTILE.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(ModEntities.GROVE_STALKER.get(), ctx -> catalog(ctx, BossId.GROVE_STALKER));
-        event.registerEntityRenderer(ModEntities.DUNE_SCORPION.get(), ctx -> catalog(ctx, BossId.DUNE_SCORPION));
-        event.registerEntityRenderer(ModEntities.FROST_HOWLER.get(), ctx -> catalog(ctx, BossId.FROST_HOWLER));
-        event.registerEntityRenderer(ModEntities.BOG_WITCH.get(), ctx -> catalog(ctx, BossId.BOG_WITCH));
-        event.registerEntityRenderer(ModEntities.REEF_LEVIATHAN.get(), ctx -> catalog(ctx, BossId.REEF_LEVIATHAN));
-        event.registerEntityRenderer(ModEntities.ASH_IMP_LORD.get(), ctx -> catalog(ctx, BossId.ASH_IMP_LORD));
-        event.registerEntityRenderer(ModEntities.THUNDER_COLOSSUS.get(), ctx -> catalog(ctx, BossId.THUNDER_COLOSSUS));
-        event.registerEntityRenderer(ModEntities.CRYSTAL_ORACLE.get(), ctx -> catalog(ctx, BossId.CRYSTAL_ORACLE));
-        event.registerEntityRenderer(ModEntities.CRIMSON_SUMMONER.get(), ctx -> catalog(ctx, BossId.CRIMSON_SUMMONER));
-        event.registerEntityRenderer(ModEntities.ABYSS_KNIGHT.get(), ctx -> catalog(ctx, BossId.ABYSS_KNIGHT));
-        event.registerEntityRenderer(ModEntities.SANDSTORM_EMPRESS.get(), ctx -> catalog(ctx, BossId.SANDSTORM_EMPRESS));
-        event.registerEntityRenderer(ModEntities.VOID_REAPER.get(), ctx -> catalog(ctx, BossId.VOID_REAPER));
-        event.registerEntityRenderer(ModEntities.INFERNAL_BEHEMOTH.get(), ctx -> catalog(ctx, BossId.INFERNAL_BEHEMOTH));
-        event.registerEntityRenderer(ModEntities.GLACIAL_SOVEREIGN.get(), ctx -> catalog(ctx, BossId.GLACIAL_SOVEREIGN));
+        for (BossId id : BossId.values()) {
+            event.registerEntityRenderer(typeFor(id), ctx -> catalog(ctx, id));
+        }
     }
 
-    private static HumanoidMobRenderer<ShadowScoutEntity, HumanoidModel<ShadowScoutEntity>> scout(EntityRendererProvider.Context ctx) {
-        return plain(ctx, "textures/entity/zombie/zombie.png", 0.5f);
-    }
-
-    private static HumanoidMobRenderer<RankWardenEntity, HumanoidModel<RankWardenEntity>> warden(EntityRendererProvider.Context ctx) {
-        return plain(ctx, "textures/entity/wither/wither.png", 0.6f);
-    }
-
-    private static HumanoidMobRenderer<GateMonarchEntity, HumanoidModel<GateMonarchEntity>> monarch(EntityRendererProvider.Context ctx) {
-        return plain(ctx, "textures/entity/enderdragon/dragon.png", 0.7f);
-    }
-
-    private static HumanoidMobRenderer<Kv2BossEntity, HumanoidModel<Kv2BossEntity>> kv2(EntityRendererProvider.Context ctx) {
-        return new HumanoidMobRenderer<>(ctx, new HumanoidModel<>(ctx.bakeLayer(ModelLayers.PLAYER)), 1.1f) {
-            @Override
-            public ResourceLocation getTextureLocation(Kv2BossEntity entity) {
-                return ResourceLocation.withDefaultNamespace("textures/entity/iron_golem/iron_golem.png");
-            }
-
-            @Override
-            protected void scale(Kv2BossEntity entity, PoseStack pose, float partialTick) {
-                float t = entity.tickCount + partialTick;
-                float base = 1.85f;
-                BossAnimState anim = entity.animState();
-                if (anim == BossAnimState.CAST || anim == BossAnimState.WINDUP) {
-                    // Barrel rise / recoil telegraph
-                    pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-20f - 8f * Mth.sin(t * 0.5f)));
-                    base += 0.08f * Mth.sin(t * 1.2f);
-                } else if (entity.phase() >= 3) {
-                    pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(Mth.sin(t * 0.4f) * 4f));
-                }
-                pose.scale(base * 1.35f, base, base * 1.35f);
-            }
+    private static net.minecraft.world.entity.EntityType<CatalogBossEntity> typeFor(BossId id) {
+        return switch (id) {
+            case GROVE_STALKER -> ModEntities.GROVE_STALKER.get();
+            case DUNE_SCORPION -> ModEntities.DUNE_SCORPION.get();
+            case FROST_HOWLER -> ModEntities.FROST_HOWLER.get();
+            case BOG_WITCH -> ModEntities.BOG_WITCH.get();
+            case REEF_LEVIATHAN -> ModEntities.REEF_LEVIATHAN.get();
+            case ASH_IMP_LORD -> ModEntities.ASH_IMP_LORD.get();
+            case THUNDER_COLOSSUS -> ModEntities.THUNDER_COLOSSUS.get();
+            case CRYSTAL_ORACLE -> ModEntities.CRYSTAL_ORACLE.get();
+            case CRIMSON_SUMMONER -> ModEntities.CRIMSON_SUMMONER.get();
+            case ABYSS_KNIGHT -> ModEntities.ABYSS_KNIGHT.get();
+            case SANDSTORM_EMPRESS -> ModEntities.SANDSTORM_EMPRESS.get();
+            case VOID_REAPER -> ModEntities.VOID_REAPER.get();
+            case INFERNAL_BEHEMOTH -> ModEntities.INFERNAL_BEHEMOTH.get();
+            case GLACIAL_SOVEREIGN -> ModEntities.GLACIAL_SOVEREIGN.get();
         };
     }
 
@@ -88,12 +63,7 @@ public final class BossRenderers {
         return new HumanoidMobRenderer<>(ctx, new HumanoidModel<>(ctx.bakeLayer(ModelLayers.PLAYER)), 0.4f) {
             @Override
             public ResourceLocation getTextureLocation(ShadowMinionEntity entity) {
-                return switch (entity.kind()) {
-                    case FROST -> ResourceLocation.withDefaultNamespace("textures/entity/stray/stray.png");
-                    case ASH -> ResourceLocation.withDefaultNamespace("textures/entity/blaze.png");
-                    case ABYSS -> ResourceLocation.withDefaultNamespace("textures/entity/wither/wither.png");
-                    default -> ResourceLocation.withDefaultNamespace("textures/entity/zombie/zombie.png");
-                };
+                return ResourceLocation.fromNamespaceAndPath("myleveling", "textures/entity/shadow_minion.png");
             }
         };
     }
@@ -105,10 +75,11 @@ public final class BossRenderers {
     private static <T extends Mob> HumanoidMobRenderer<T, HumanoidModel<T>> plain(
             EntityRendererProvider.Context ctx, String texture, float shadow
     ) {
+        ResourceLocation loc = ResourceLocation.parse(texture);
         return new HumanoidMobRenderer<>(ctx, new HumanoidModel<>(ctx.bakeLayer(ModelLayers.PLAYER)), shadow) {
             @Override
             public ResourceLocation getTextureLocation(T entity) {
-                return ResourceLocation.withDefaultNamespace(texture);
+                return loc;
             }
         };
     }
@@ -116,15 +87,17 @@ public final class BossRenderers {
     private static final class AnimatedBossRenderer
             extends HumanoidMobRenderer<CatalogBossEntity, HumanoidModel<CatalogBossEntity>> {
         private final BossId bossId;
+        private final ResourceLocation texture;
 
         private AnimatedBossRenderer(EntityRendererProvider.Context ctx, BossId bossId) {
             super(ctx, new HumanoidModel<>(ctx.bakeLayer(ModelLayers.PLAYER)), bossId.tier() == com.l7cor1s.myleveling.boss.BossTier.LARGE ? 0.8f : 0.55f);
             this.bossId = bossId;
+            this.texture = ResourceLocation.fromNamespaceAndPath("myleveling", "textures/entity/" + bossId.id() + ".png");
         }
 
         @Override
         public ResourceLocation getTextureLocation(CatalogBossEntity entity) {
-            return ResourceLocation.withDefaultNamespace(bossId.texture());
+            return texture;
         }
 
         @Override

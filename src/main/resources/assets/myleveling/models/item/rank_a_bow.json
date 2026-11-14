@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/bow"
+    "layer0": "myleveling:item/rank_a_bow"
   }
 }

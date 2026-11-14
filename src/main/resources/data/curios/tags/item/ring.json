@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "myleveling:rank_e_ring",
+    "myleveling:rank_d_ring",
+    "myleveling:rank_c_ring",
+    "myleveling:rank_b_ring",
+    "myleveling:rank_a_ring",
+    "myleveling:rank_s_ring",
+    "myleveling:artifact_e_luck",
+    "myleveling:artifact_d_speed",
+    "myleveling:artifact_c_xp",
+    "myleveling:artifact_a_mana"
+  ]
+}

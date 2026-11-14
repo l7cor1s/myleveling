@@ -24,12 +24,17 @@ import java.util.List;
  * Solo Leveling system UI: rank header, SP/PP, branch tabs, passives/actives, minor shop, reset.
  */
 public class SkillTreeScreen extends Screen {
-    private static final int PANEL = 0xF0121628;
-    private static final int PANEL_INNER = 0xE00C1020;
-    private static final int BORDER = 0xFF6C5CE7;
-    private static final int ACCENT = 0xFF4FC3F7;
-    private static final int TEXT = 0xFFE8ECFF;
-    private static final int TEXT_DIM = 0xFF8A93B8;
+    // Light Solo Leveling system panel — high contrast, still cyan/system accent
+    private static final int PANEL = 0xF0F4F7FF;
+    private static final int PANEL_INNER = 0xE8EEF3FF;
+    private static final int BORDER = 0xFF3A7BD5;
+    private static final int ACCENT = 0xFF1E88E5;
+    private static final int TEXT = 0xFF1A2333;
+    private static final int TEXT_DIM = 0xFF5A6780;
+    private static final int ROW = 0xFFE8EEF8;
+    private static final int ROW_ACTIVE = 0xFFD6E8FF;
+    private static final int ROW_CAN = 0xFFE3F2FD;
+    private static final int ROW_LOCKED = 0xFFD5DBE6;
 
     private enum Tab { QUESTS, MINORS, MELEE, RANGED, MAGIC, ENGINEERING, SURVIVAL, HUNTER }
 
@@ -43,7 +48,7 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(0, 0, this.width, this.height, 0xD0050710);
+        graphics.fill(0, 0, this.width, this.height, 0xB0A8B4C8);
     }
 
     @Override
@@ -75,11 +80,11 @@ public class SkillTreeScreen extends Screen {
     }
 
     private void drawPanel(GuiGraphics graphics, int x, int y, int w, int h) {
-        graphics.fill(x - 2, y - 2, x + w + 2, y + h + 2, 0x332A2A80);
+        graphics.fill(x - 3, y - 3, x + w + 3, y + h + 3, 0x552A4A80);
         graphics.fill(x, y, x + w, y + h, PANEL);
         graphics.renderOutline(x, y, w, h, BORDER);
         graphics.fill(x + 3, y + 3, x + w - 3, y + h - 3, PANEL_INNER);
-        graphics.fill(x + 12, y + 4, x + w - 12, y + 5, ACCENT);
+        graphics.fill(x + 12, y + 4, x + w - 12, y + 6, ACCENT);
     }
 
     private void drawHeader(GuiGraphics graphics, int x, int y, int w, Rank rank, PlayerProgress progress, float pt) {
@@ -100,8 +105,9 @@ public class SkillTreeScreen extends Screen {
         int barX = cx - barW / 2;
         int barY = y + 48;
         float fill = xpProgress(progress.xp(), rank);
-        graphics.fill(barX, barY, barX + barW, barY + 5, 0xFF1A2035);
-        graphics.fill(barX, barY, barX + Math.round(barW * fill), barY + 5, 0xFF5B8CFF);
+        graphics.fill(barX, barY, barX + barW, barY + 6, 0xFFC5D0E0);
+        graphics.renderOutline(barX, barY, barW, 6, 0xFF8AA0BE);
+        graphics.fill(barX, barY, barX + Math.round(barW * fill), barY + 6, 0xFF42A5F5);
 
         String xpText = rank.isMax()
                 ? progress.xp() + " XP"
@@ -123,10 +129,10 @@ public class SkillTreeScreen extends Screen {
             int tx = startX + i * tabW;
             boolean selected = t == tab;
             boolean hover = mouseX >= tx && mouseX < tx + tabW - 2 && mouseY >= tabY && mouseY < tabY + 14;
-            graphics.fill(tx, tabY, tx + tabW - 2, tabY + 14, selected ? 0xFF2A3A70 : (hover ? 0xFF1A2440 : 0xFF121828));
-            graphics.renderOutline(tx, tabY, tabW - 2, 14, selected ? ACCENT : 0xFF3D4A7A);
+            graphics.fill(tx, tabY, tx + tabW - 2, tabY + 14, selected ? 0xFFBBDEFB : (hover ? 0xFFE3F2FD : 0xFFDCE3EE));
+            graphics.renderOutline(tx, tabY, tabW - 2, 14, selected ? ACCENT : 0xFF90A4C0);
             String label = tabLabel(t);
-            graphics.drawCenteredString(this.font, label, tx + (tabW - 2) / 2, tabY + 3, selected ? TEXT : TEXT_DIM);
+            graphics.drawCenteredString(this.font, label, tx + (tabW - 2) / 2, tabY + 3, selected ? 0xFF0D47A1 : TEXT_DIM);
             zones.add(new ClickZone(tx, tabY, tabW - 2, 14, () -> tab = t, Component.translatable("screen.myleveling.tab." + t.name().toLowerCase())));
         }
     }
@@ -160,9 +166,9 @@ public class SkillTreeScreen extends Screen {
                 boolean locked = !rank.isAtLeast(req);
                 boolean can = !locked && !selected && !slotTaken(progress, passive)
                         && progress.passivePoints() >= passive.passivePointCost();
-                int color = selected ? 0xFF1A2A55 : (can ? 0xFF152038 : 0xFF10141F);
-                int border = selected ? 0xFF7B8CFF : (can ? ACCENT : 0xFF2A3148);
-                int text = selected || can ? TEXT : 0xFF555E7A;
+                int color = selected ? ROW_ACTIVE : (can ? ROW_CAN : ROW_LOCKED);
+                int border = selected ? 0xFF1565C0 : (can ? ACCENT : 0xFF9AA8BC);
+                int text = selected || can ? TEXT : 0xFF7A8699;
                 graphics.fill(bx, y, bx + 150, y + 16, color);
                 graphics.renderOutline(bx, y, 150, 16, border);
                 String name = passive.getDisplayName().getString();
@@ -190,10 +196,10 @@ public class SkillTreeScreen extends Screen {
             boolean canUnlock = !unlocked && rank.isAtLeast(active.requiredRank())
                     && progress.passivePoints() >= active.passivePointCost();
             int bx = contentX;
-            graphics.fill(bx, y, bx + 210, y + 16, unlocked ? 0xFF1A2A55 : 0xFF10141F);
-            graphics.renderOutline(bx, y, 210, 16, unlocked ? 0xFF7B8CFF : (canUnlock ? ACCENT : 0xFF2A3148));
+            graphics.fill(bx, y, bx + 210, y + 16, unlocked ? ROW_ACTIVE : ROW_LOCKED);
+            graphics.renderOutline(bx, y, 210, 16, unlocked ? 0xFF1565C0 : (canUnlock ? ACCENT : 0xFF9AA8BC));
             String label = active.getDisplayName().getString() + " [" + active.requiredRank() + ", " + active.passivePointCost() + "PP]";
-            graphics.drawString(this.font, this.font.plainSubstrByWidth(label, 200), bx + 4, y + 4, TEXT, false);
+            graphics.drawString(this.font, this.font.plainSubstrByWidth(label, 200), bx + 4, y + 4, unlocked || canUnlock ? TEXT : 0xFF7A8699, false);
 
             int finalY = y;
             zones.add(new ClickZone(bx, finalY, 210, 16, () -> {
@@ -212,8 +218,8 @@ public class SkillTreeScreen extends Screen {
                 for (int slot = 0; slot < 2; slot++) {
                     int sx = bx + 216 + slot * 34;
                     boolean eq = active.id().equals(progress.equipped(slot));
-                    graphics.fill(sx, y, sx + 30, y + 16, eq ? 0xFF2A4A30 : 0xFF182030);
-                    graphics.renderOutline(sx, y, 30, 16, eq ? 0xFF6CFF8A : 0xFF3D4A7A);
+                    graphics.fill(sx, y, sx + 30, y + 16, eq ? 0xFFC8E6C9 : 0xFFE8EEF8);
+                    graphics.renderOutline(sx, y, 30, 16, eq ? 0xFF2E7D32 : 0xFF90A4C0);
                     graphics.drawCenteredString(this.font, "S" + (slot + 1), sx + 15, y + 4, TEXT);
                     int finalSlot = slot;
                     zones.add(new ClickZone(sx, finalY, 30, 16, () ->
@@ -228,7 +234,7 @@ public class SkillTreeScreen extends Screen {
     private void drawQuests(GuiGraphics graphics, int x, int y, int w, PlayerProgress progress) {
         graphics.drawString(this.font, Component.translatable("screen.myleveling.quests_title"), x, y, ACCENT, false);
         if (progress.monarchDefeated()) {
-            graphics.drawString(this.font, Component.translatable("screen.myleveling.goal_done"), x, y + 10, 0xFFFFE082, false);
+            graphics.drawString(this.font, Component.translatable("screen.myleveling.goal_done"), x, y + 10, 0xFF2E7D32, false);
         } else {
             graphics.drawString(this.font, Component.translatable("screen.myleveling.goal_hint"), x, y + 10, TEXT_DIM, false);
         }
@@ -243,8 +249,8 @@ public class SkillTreeScreen extends Screen {
             int cur = progress.questCount(quest.id());
             String line = quest.title().getString() + " [" + quest.kind().name() + "] "
                     + (active ? cur + "/" + quest.targetCount() : (done ? "✓" : "·"));
-            graphics.fill(x, row, x + w, row + 16, active ? 0xFF1A2A55 : 0xFF10141F);
-            graphics.renderOutline(x, row, w, 16, active ? ACCENT : 0xFF2A3148);
+            graphics.fill(x, row, x + w, row + 16, active ? ROW_ACTIVE : ROW);
+            graphics.renderOutline(x, row, w, 16, active ? ACCENT : 0xFF9AA8BC);
             graphics.drawString(this.font, this.font.plainSubstrByWidth(line, w - 8), x + 4, row + 4, TEXT, false);
 
             int finalRow = row;
@@ -266,8 +272,8 @@ public class SkillTreeScreen extends Screen {
         for (MinorUpgrade upgrade : MinorUpgrade.all()) {
             int level = progress.minorLevel(upgrade.id());
             boolean can = progress.skillPoints() >= upgrade.costPerLevel() && level < upgrade.maxLevel();
-            graphics.fill(x, row, x + w, row + 16, can ? 0xFF152038 : 0xFF10141F);
-            graphics.renderOutline(x, row, w, 16, can ? ACCENT : 0xFF2A3148);
+            graphics.fill(x, row, x + w, row + 16, can ? ROW_CAN : ROW);
+            graphics.renderOutline(x, row, w, 16, can ? ACCENT : 0xFF9AA8BC);
             String line = upgrade.getDisplayName().getString() + "  " + level + "/" + upgrade.maxLevel()
                     + "  (" + upgrade.costPerLevel() + " SP)";
             graphics.drawString(this.font, line, x + 4, row + 4, TEXT, false);
@@ -285,9 +291,9 @@ public class SkillTreeScreen extends Screen {
         int bx = panelX + panelW - 90;
         int by = panelY + panelH - 20;
         boolean hover = mouseX >= bx && mouseX < bx + 78 && mouseY >= by && mouseY < by + 14;
-        graphics.fill(bx, by, bx + 78, by + 14, hover ? 0xFF402030 : 0xFF281018);
-        graphics.renderOutline(bx, by, 78, 14, 0xFFFF6B8A);
-        graphics.drawCenteredString(this.font, Component.translatable("screen.myleveling.reset"), bx + 39, by + 3, 0xFFFFB0C0);
+        graphics.fill(bx, by, bx + 78, by + 14, hover ? 0xFFFFCDD2 : 0xFFFFEBEE);
+        graphics.renderOutline(bx, by, 78, 14, 0xFFE53935);
+        graphics.drawCenteredString(this.font, Component.translatable("screen.myleveling.reset"), bx + 39, by + 3, 0xFFB71C1C);
         zones.add(new ClickZone(bx, by, 78, 14,
                 () -> PacketDistributor.sendToServer(SkillActionPayload.reset()),
                 Component.translatable("screen.myleveling.reset_hint")));
@@ -371,13 +377,14 @@ public class SkillTreeScreen extends Screen {
     }
 
     private static int rankColor(Rank rank) {
+        // Darker/saturated for light Solo Leveling panels
         return switch (rank) {
-            case E -> 0xFF9AA4C7;
-            case D -> 0xFF5DFFB0;
-            case C -> 0xFF4FC3F7;
-            case B -> 0xFF7B5CFF;
-            case A -> 0xFFFF6BCB;
-            case S -> 0xFFFFE082;
+            case E -> 0xFF546E7A;
+            case D -> 0xFF00897B;
+            case C -> 0xFF1565C0;
+            case B -> 0xFF5E35B1;
+            case A -> 0xFFC2185B;
+            case S -> 0xFFF9A825;
         };
     }
 

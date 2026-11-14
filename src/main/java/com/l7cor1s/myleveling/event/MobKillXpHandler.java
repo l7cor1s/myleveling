@@ -1,6 +1,7 @@
 package com.l7cor1s.myleveling.event;
 
 import com.l7cor1s.myleveling.MyLeveling;
+import com.l7cor1s.myleveling.item.ArtifactEffects;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
 import com.l7cor1s.myleveling.skill.PlayerSkillData;
@@ -45,6 +46,7 @@ public final class MobKillXpHandler {
         if (progress.hasPassive("hunt_b_more_xp")) {
             mult += 0.15f;
         }
+        mult *= ArtifactEffects.xpMultiplier(killer);
         xp = Math.max(1, Math.round(xp * mult));
 
         PlayerRankData.addXp(killer, xp);

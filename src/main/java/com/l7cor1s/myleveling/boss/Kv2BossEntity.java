@@ -282,6 +282,7 @@ public class Kv2BossEntity extends Monster {
         playVoice(ModSounds.WIG_DROP.get());
         this.spawnAtLocation(new ItemStack(ModItems.KV2_HOWITZER.get()));
         this.spawnAtLocation(new ItemStack(ModItems.RANK_S_CHEST.get()));
+        this.spawnAtLocation(new ItemStack(ModItems.ARTIFACT_S_SYSTEM.get()));
         if (this.random.nextFloat() < 0.7f) {
             this.spawnAtLocation(new ItemStack(ModItems.GATE_KEY.get()));
         }

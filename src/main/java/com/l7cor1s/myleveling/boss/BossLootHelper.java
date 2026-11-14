@@ -40,6 +40,9 @@ public final class BossLootHelper {
         if (!unique.isEmpty()) {
             spawn(boss, unique);
         }
+        if (random.nextFloat() < (tier == BossTier.LARGE ? 0.55f : tier == BossTier.MID ? 0.35f : 0.20f)) {
+            spawn(boss, pickArtifact(tier, random));
+        }
     }
 
     private static ItemStack pickGuaranteed(BossTier tier) {
@@ -58,6 +61,9 @@ public final class BossLootHelper {
                 pool.add(() -> stack(ModItems.RANK_C_BLADE));
                 pool.add(() -> stack(ModItems.RANK_C_BOW));
                 pool.add(() -> stack(ModItems.RANK_D_CHEST));
+                pool.add(() -> stack(ModItems.RANK_D_HELM));
+                pool.add(() -> stack(ModItems.RANK_E_BOW));
+                pool.add(() -> stack(ModItems.RANK_D_AXE));
             }
             case MID -> {
                 pool.add(() -> stack(ModItems.RANK_B_CHEST));
@@ -65,6 +71,10 @@ public final class BossLootHelper {
                 pool.add(() -> stack(ModItems.RANK_A_BOW));
                 pool.add(() -> stack(ModItems.RANK_A_AMULET));
                 pool.add(() -> stack(ModItems.RANK_C_AMULET));
+                pool.add(() -> stack(ModItems.RANK_B_AXE));
+                pool.add(() -> stack(ModItems.RANK_B_HELM));
+                pool.add(() -> stack(ModItems.RANK_B_LEGS));
+                pool.add(() -> stack(ModItems.RANK_B_BOOTS));
             }
             case LARGE -> {
                 pool.add(() -> stack(ModItems.RANK_S_BLADE));
@@ -72,6 +82,36 @@ public final class BossLootHelper {
                 pool.add(() -> stack(ModItems.RANK_S_HAMMER));
                 pool.add(() -> stack(ModItems.RANK_S_CROWN));
                 pool.add(() -> stack(ModItems.RANK_A_AMULET));
+                pool.add(() -> stack(ModItems.RANK_S_BOW));
+                pool.add(() -> stack(ModItems.RANK_S_HELM));
+                pool.add(() -> stack(ModItems.RANK_S_LEGS));
+                pool.add(() -> stack(ModItems.RANK_S_BOOTS));
+                pool.add(() -> stack(ModItems.RANK_S_RING));
+            }
+        }
+        return pool.get(random.nextInt(pool.size())).get();
+    }
+
+    private static ItemStack pickArtifact(BossTier tier, RandomSource random) {
+        List<Supplier<ItemStack>> pool = new ArrayList<>();
+        switch (tier) {
+            case MINI -> {
+                pool.add(() -> stack(ModItems.ARTIFACT_E_LUCK));
+                pool.add(() -> stack(ModItems.ARTIFACT_D_SPEED));
+                pool.add(() -> stack(ModItems.ARTIFACT_C_GUARD));
+                pool.add(() -> stack(ModItems.ARTIFACT_C_XP));
+            }
+            case MID -> {
+                pool.add(() -> stack(ModItems.ARTIFACT_C_GUARD));
+                pool.add(() -> stack(ModItems.ARTIFACT_B_FURY));
+                pool.add(() -> stack(ModItems.ARTIFACT_A_MANA));
+                pool.add(() -> stack(ModItems.ARTIFACT_C_XP));
+            }
+            case LARGE -> {
+                pool.add(() -> stack(ModItems.ARTIFACT_A_VAMP));
+                pool.add(() -> stack(ModItems.ARTIFACT_A_MANA));
+                pool.add(() -> stack(ModItems.ARTIFACT_S_SYSTEM));
+                pool.add(() -> stack(ModItems.ARTIFACT_B_FURY));
             }
         }
         return pool.get(random.nextInt(pool.size())).get();

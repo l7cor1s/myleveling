@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "myleveling:rank_e_amulet",
+    "myleveling:rank_c_amulet",
+    "myleveling:rank_b_amulet",
+    "myleveling:rank_a_amulet",
+    "myleveling:rank_s_amulet",
+    "myleveling:rank_s_crown",
+    "myleveling:artifact_c_guard",
+    "myleveling:artifact_b_fury",
+    "myleveling:artifact_a_vamp",
+    "myleveling:artifact_s_system",
+    "myleveling:grove_fang",
+    "myleveling:frost_core",
+    "myleveling:thunder_core",
+    "myleveling:oracle_shard",
+    "myleveling:behemoth_heart",
+    "myleveling:glacial_crown"
+  ]
+}

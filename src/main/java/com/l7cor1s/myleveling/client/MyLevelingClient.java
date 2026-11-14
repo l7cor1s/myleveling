@@ -14,6 +14,7 @@ public class MyLevelingClient {
     public MyLevelingClient(IEventBus modEventBus) {
         modEventBus.addListener(this::onRegisterKeys);
         modEventBus.addListener(this::onRegisterGuiLayers);
+        modEventBus.addListener(BossRenderers::registerLayers);
         modEventBus.addListener(BossRenderers::register);
     }
 
