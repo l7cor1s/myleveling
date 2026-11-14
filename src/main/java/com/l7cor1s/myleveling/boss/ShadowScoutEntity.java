@@ -21,9 +21,22 @@ import net.minecraft.world.level.Level;
  * Mini-boss (D–C): fast shadow scout.
  */
 public class ShadowScoutEntity extends Monster {
+    private boolean announced;
+
     public ShadowScoutEntity(EntityType<? extends ShadowScoutEntity> type, Level level) {
         super(type, level);
         this.xpReward = 40;
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (!this.level().isClientSide() && !announced && this.getTarget() instanceof Player) {
+            announced = true;
+            for (var p : this.level().getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class, this.getBoundingBox().inflate(32))) {
+                p.displayClientMessage(net.minecraft.network.chat.Component.translatable("boss.myleveling.shadow_scout.aggro"), false);
+            }
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {

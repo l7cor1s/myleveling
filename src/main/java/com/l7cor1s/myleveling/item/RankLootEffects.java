@@ -73,6 +73,10 @@ public final class RankLootEffects {
         if (item instanceof AxeItem && path.contains("hammer")) {
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
         }
+        if (path.equals("void_scythe") && random.nextFloat() < 0.30f) {
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, 1));
+            player.heal(1.0f);
+        }
 
         // Accessories in offhand / inventory
         if (hasAccessory(player, "rank_c_amulet") && random.nextFloat() < 0.10f) {
@@ -80,6 +84,18 @@ public final class RankLootEffects {
         }
         if (hasAccessory(player, "rank_s_crown")) {
             player.heal(0.5f);
+        }
+        if (hasAccessory(player, "frost_core") && random.nextFloat() < 0.15f) {
+            target.setTicksFrozen(Math.min(140, target.getTicksFrozen() + 40));
+        }
+        if (hasAccessory(player, "ash_ember") && random.nextFloat() < 0.15f) {
+            target.igniteForSeconds(2);
+        }
+        if (hasAccessory(player, "behemoth_heart")) {
+            player.heal(0.25f);
+        }
+        if (hasAccessory(player, "glacial_crown") && random.nextFloat() < 0.12f) {
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
         }
     }
 

@@ -1,6 +1,7 @@
 package com.l7cor1s.myleveling.command;
 
 import com.l7cor1s.myleveling.MyLeveling;
+import com.l7cor1s.myleveling.boss.BossId;
 import com.l7cor1s.myleveling.boss.ModEntities;
 import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
@@ -10,8 +11,10 @@ import com.l7cor1s.myleveling.xp.MobTier;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,8 +25,22 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EventBusSubscriber(modid = MyLeveling.MOD_ID)
 public final class ModCommands {
+    private static final SuggestionProvider<CommandSourceStack> BOSS_SUGGESTIONS = (ctx, builder) -> {
+        List<String> names = new ArrayList<>();
+        for (String alias : ModEntities.aliases()) {
+            names.add(alias);
+        }
+        for (BossId id : BossId.values()) {
+            names.add(id.id());
+        }
+        return SharedSuggestionProvider.suggest(names, builder);
+    };
+
     private ModCommands() {
     }
 
@@ -39,7 +56,10 @@ public final class ModCommands {
                 .requires(src -> src.hasPermission(2))
                 .then(Commands.literal("spawn")
                         .then(Commands.argument("boss", StringArgumentType.word())
+                                .suggests(BOSS_SUGGESTIONS)
                                 .executes(ctx -> spawnBoss(ctx.getSource(), StringArgumentType.getString(ctx, "boss")))))
+                .then(Commands.literal("listbosses")
+                        .executes(ctx -> listBosses(ctx.getSource())))
                 .then(Commands.literal("givekey")
                         .executes(ctx -> giveKey(ctx.getSource()))));
     }
@@ -86,20 +106,41 @@ public final class ModCommands {
             return 0;
         }
         ServerLevel level = player.serverLevel();
-        Entity entity = switch (boss.toLowerCase()) {
-            case "scout", "shadow_scout", "d", "c" -> ModEntities.SHADOW_SCOUT.get().create(level);
-            case "warden", "rank_warden", "b", "a" -> ModEntities.RANK_WARDEN.get().create(level);
-            case "monarch", "gate_monarch", "s", "final" -> ModEntities.GATE_MONARCH.get().create(level);
-            default -> null;
-        };
+        EntityType<?> type = ModEntities.byAlias(boss).orElse(null);
+        if (type == null) {
+            source.sendFailure(Component.translatable("command.myleveling.unknown_boss"));
+            return 0;
+        }
+        Entity entity = type.create(level);
         if (entity == null) {
             source.sendFailure(Component.translatable("command.myleveling.unknown_boss"));
             return 0;
         }
         entity.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), 0);
         level.addFreshEntity(entity);
-        EntityType<?> type = entity.getType();
         source.sendSuccess(() -> Component.translatable("command.myleveling.spawned", type.getDescription()), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int listBosses(CommandSourceStack source) {
+        StringBuilder mini = new StringBuilder();
+        StringBuilder mid = new StringBuilder();
+        StringBuilder large = new StringBuilder();
+        for (BossId id : BossId.values()) {
+            StringBuilder target = switch (id.tier()) {
+                case MINI -> mini;
+                case MID -> mid;
+                case LARGE -> large;
+            };
+            if (!target.isEmpty()) {
+                target.append(", ");
+            }
+            target.append(id.id());
+        }
+        source.sendSuccess(() -> Component.literal("Legacy: scout, warden, monarch"), false);
+        source.sendSuccess(() -> Component.literal("Mini D–C: " + mini), false);
+        source.sendSuccess(() -> Component.literal("Mid B–A: " + mid), false);
+        source.sendSuccess(() -> Component.literal("Large S: " + large), false);
         return Command.SINGLE_SUCCESS;
     }
 

@@ -55,6 +55,22 @@ public final class ModItems {
     public static final DeferredItem<Item> RANK_S_CROWN = accessory("rank_s_crown");
     public static final DeferredItem<Item> GATE_KEY = ITEMS.register("gate_key", () -> new Item(new Item.Properties().stacksTo(1)));
 
+    // Unique boss drops
+    public static final DeferredItem<Item> GROVE_FANG = accessory("grove_fang");
+    public static final DeferredItem<Item> SCORPION_STINGER = accessory("scorpion_stinger");
+    public static final DeferredItem<Item> FROST_CORE = accessory("frost_core");
+    public static final DeferredItem<Item> WITCH_GRIMOIRE = accessory("witch_grimoire");
+    public static final DeferredItem<Item> REEF_PEARL = accessory("reef_pearl");
+    public static final DeferredItem<Item> ASH_EMBER = accessory("ash_ember");
+    public static final DeferredItem<Item> THUNDER_CORE = accessory("thunder_core");
+    public static final DeferredItem<Item> ORACLE_SHARD = accessory("oracle_shard");
+    public static final DeferredItem<Item> CRIMSON_SIGIL = accessory("crimson_sigil");
+    public static final DeferredItem<Item> ABYSS_PLATE = chest("abyss_plate", ArmorMaterials.NETHERITE);
+    public static final DeferredItem<Item> SANDSTORM_VEIL = accessory("sandstorm_veil");
+    public static final DeferredItem<Item> VOID_SCYTHE = sword("void_scythe", Tiers.NETHERITE, 5, -2.6f);
+    public static final DeferredItem<Item> BEHEMOTH_HEART = accessory("behemoth_heart");
+    public static final DeferredItem<Item> GLACIAL_CROWN = accessory("glacial_crown");
+
     public static final Supplier<CreativeModeTab> TAB = TABS.register("myleveling", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.myleveling"))
             .icon(() -> RANK_S_BLADE.get().getDefaultInstance())
@@ -77,6 +93,20 @@ public final class ModItems {
                 out.accept(RANK_A_AMULET.get());
                 out.accept(RANK_S_CROWN.get());
                 out.accept(GATE_KEY.get());
+                out.accept(GROVE_FANG.get());
+                out.accept(SCORPION_STINGER.get());
+                out.accept(FROST_CORE.get());
+                out.accept(WITCH_GRIMOIRE.get());
+                out.accept(REEF_PEARL.get());
+                out.accept(ASH_EMBER.get());
+                out.accept(THUNDER_CORE.get());
+                out.accept(ORACLE_SHARD.get());
+                out.accept(CRIMSON_SIGIL.get());
+                out.accept(ABYSS_PLATE.get());
+                out.accept(SANDSTORM_VEIL.get());
+                out.accept(VOID_SCYTHE.get());
+                out.accept(BEHEMOTH_HEART.get());
+                out.accept(GLACIAL_CROWN.get());
                 out.accept(com.l7cor1s.myleveling.gate.ModBlocks.RANK_GATE_ITEM.get());
             }).build());
 
@@ -91,11 +121,14 @@ public final class ModItems {
     public static Rank rankOf(Item item) {
         String path = item.builtInRegistryHolder().key().location().getPath();
         if (path.startsWith("rank_e")) return Rank.E;
-        if (path.startsWith("rank_d")) return Rank.D;
-        if (path.startsWith("rank_c")) return Rank.C;
-        if (path.startsWith("rank_b")) return Rank.B;
-        if (path.startsWith("rank_a")) return Rank.A;
-        if (path.startsWith("rank_s")) return Rank.S;
+        if (path.startsWith("rank_d") || path.equals("grove_fang") || path.equals("scorpion_stinger")) return Rank.D;
+        if (path.startsWith("rank_c") || path.equals("frost_core") || path.equals("witch_grimoire")
+                || path.equals("reef_pearl") || path.equals("ash_ember")) return Rank.C;
+        if (path.startsWith("rank_b") || path.equals("thunder_core") || path.equals("crimson_sigil")) return Rank.B;
+        if (path.startsWith("rank_a") || path.equals("oracle_shard") || path.equals("abyss_plate")
+                || path.equals("sandstorm_veil")) return Rank.A;
+        if (path.startsWith("rank_s") || path.equals("void_scythe") || path.equals("behemoth_heart")
+                || path.equals("glacial_crown") || path.equals("gate_key")) return Rank.S;
         return Rank.E;
     }
 

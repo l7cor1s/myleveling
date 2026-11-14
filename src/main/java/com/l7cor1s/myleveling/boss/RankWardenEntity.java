@@ -64,6 +64,9 @@ public class RankWardenEntity extends Monster {
             if (this.level() instanceof ServerLevel server) {
                 server.sendParticles(ParticleTypes.ANGRY_VILLAGER, this.getX(), this.getY() + 1.5, this.getZ(), 30, 0.5, 0.5, 0.5, 0.05);
             }
+            for (var p : this.level().getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class, this.getBoundingBox().inflate(40))) {
+                p.displayClientMessage(net.minecraft.network.chat.Component.translatable("boss.myleveling.rank_warden.phase"), false);
+            }
         }
         if (enraged && this.tickCount % 40 == 0 && this.getTarget() instanceof LivingEntity target) {
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));

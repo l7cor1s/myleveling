@@ -88,11 +88,13 @@ public class GateMonarchEntity extends Monster {
             phase = 2;
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 10, 1));
             pulse(ParticleTypes.SOUL_FIRE_FLAME);
+            announcePhase();
         } else if (phase == 2 && hp <= 0.33f) {
             phase = 3;
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 120, 2));
             this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 120, 1));
             pulse(ParticleTypes.DRAGON_BREATH);
+            announcePhase();
         }
 
         if (this.tickCount % (phase == 3 ? 30 : 50) == 0 && this.getTarget() instanceof LivingEntity target) {
@@ -111,6 +113,12 @@ public class GateMonarchEntity extends Monster {
     private void pulse(net.minecraft.core.particles.SimpleParticleType type) {
         if (this.level() instanceof ServerLevel server) {
             server.sendParticles(type, this.getX(), this.getY() + 1.2, this.getZ(), 50, 1.2, 1.0, 1.2, 0.05);
+        }
+    }
+
+    private void announcePhase() {
+        for (ServerPlayer player : this.level().getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(48.0))) {
+            player.displayClientMessage(Component.translatable("boss.myleveling.gate_monarch.phase"), false);
         }
     }
 
