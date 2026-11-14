@@ -70,6 +70,8 @@ public final class ModItems {
     public static final DeferredItem<Item> VOID_SCYTHE = sword("void_scythe", Tiers.NETHERITE, 5, -2.6f);
     public static final DeferredItem<Item> BEHEMOTH_HEART = accessory("behemoth_heart");
     public static final DeferredItem<Item> GLACIAL_CROWN = accessory("glacial_crown");
+    public static final DeferredItem<Item> KV2_HOWITZER = ITEMS.register("kv2_howitzer",
+            () -> new Kv2HowitzerItem(new Item.Properties().stacksTo(1).durability(420)));
 
     public static final Supplier<CreativeModeTab> TAB = TABS.register("myleveling", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.myleveling"))
@@ -107,6 +109,7 @@ public final class ModItems {
                 out.accept(VOID_SCYTHE.get());
                 out.accept(BEHEMOTH_HEART.get());
                 out.accept(GLACIAL_CROWN.get());
+                out.accept(KV2_HOWITZER.get());
                 out.accept(com.l7cor1s.myleveling.gate.ModBlocks.RANK_GATE_ITEM.get());
             }).build());
 
@@ -128,7 +131,7 @@ public final class ModItems {
         if (path.startsWith("rank_a") || path.equals("oracle_shard") || path.equals("abyss_plate")
                 || path.equals("sandstorm_veil")) return Rank.A;
         if (path.startsWith("rank_s") || path.equals("void_scythe") || path.equals("behemoth_heart")
-                || path.equals("glacial_crown") || path.equals("gate_key")) return Rank.S;
+                || path.equals("glacial_crown") || path.equals("gate_key") || path.equals("kv2_howitzer")) return Rank.S;
         return Rank.E;
     }
 

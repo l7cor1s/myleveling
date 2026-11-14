@@ -1,6 +1,7 @@
 package com.l7cor1s.myleveling.boss;
 
 import com.l7cor1s.myleveling.MyLeveling;
+import com.l7cor1s.myleveling.entity.DynamiteProjectile;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -48,6 +49,14 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> VOID_REAPER = catalog("void_reaper", CatalogBossEntity::voidReaper, 0.9f, 2.5f, true);
     public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> INFERNAL_BEHEMOTH = catalog("infernal_behemoth", CatalogBossEntity::behemoth, 1.4f, 3.0f, true);
     public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> GLACIAL_SOVEREIGN = catalog("glacial_sovereign", CatalogBossEntity::glacial, 1.1f, 2.7f, false);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<Kv2BossEntity>> KV2 =
+            ENTITIES.register("kv2", () -> EntityType.Builder.of(Kv2BossEntity::new, MobCategory.MONSTER)
+                    .sized(2.2f, 2.6f).fireImmune().clientTrackingRange(16).build("kv2"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DynamiteProjectile>> DYNAMITE_PROJECTILE =
+            ENTITIES.register("dynamite_projectile", () -> EntityType.Builder.<DynamiteProjectile>of(DynamiteProjectile::new, MobCategory.MISC)
+                    .sized(0.4f, 0.4f).clientTrackingRange(8).updateInterval(10).build("dynamite_projectile"));
 
     private static final Map<String, DeferredHolder<EntityType<?>, ? extends EntityType<?>>> BY_ALIAS = new LinkedHashMap<>();
 
@@ -110,6 +119,12 @@ public final class ModEntities {
         put("glacial_sovereign", GLACIAL_SOVEREIGN);
         put("glacial", GLACIAL_SOVEREIGN);
         put("sovereign", GLACIAL_SOVEREIGN);
+
+        put("kv2", KV2);
+        put("kv-2", KV2);
+        put("kv_2", KV2);
+        put("korben", KV2);
+        put("tank", KV2);
     }
 
     private static void put(String alias, DeferredHolder<EntityType<?>, ? extends EntityType<?>> holder) {

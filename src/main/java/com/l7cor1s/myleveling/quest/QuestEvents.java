@@ -3,6 +3,7 @@ package com.l7cor1s.myleveling.quest;
 import com.l7cor1s.myleveling.MyLeveling;
 import com.l7cor1s.myleveling.boss.AbstractRankedBoss;
 import com.l7cor1s.myleveling.boss.GateMonarchEntity;
+import com.l7cor1s.myleveling.boss.Kv2BossEntity;
 import com.l7cor1s.myleveling.boss.RankWardenEntity;
 import com.l7cor1s.myleveling.boss.ShadowScoutEntity;
 import com.l7cor1s.myleveling.tag.ModEntityTags;
@@ -35,6 +36,7 @@ public final class QuestEvents {
                 || victim instanceof ShadowScoutEntity
                 || victim instanceof RankWardenEntity
                 || victim instanceof GateMonarchEntity
+                || victim instanceof Kv2BossEntity
                 || victim.getType().is(ModEntityTags.BOSSES);
         if (rankedBoss) {
             PlayerQuestData.onBossKilled(player, BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()));

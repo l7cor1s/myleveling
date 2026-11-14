@@ -493,5 +493,18 @@
   "subtitles.myleveling.corben_scream": "Звук: corben_scream",
   "subtitles.myleveling.vaseline_screech": "Звук: vaseline_screech",
   "subtitles.myleveling.open_beer": "Звук: open_beer",
-  "command.myleveling.sound_unknown": "Неизвестный звук"
+  "command.myleveling.sound_unknown": "Неизвестный звук",
+  "entity.myleveling.kv2": "КВ-2",
+  "entity.myleveling.dynamite_projectile": "Динамит",
+  "item.myleveling.kv2_howitzer": "Гаубица КВ-2",
+  "lore.myleveling.kv2_howitzer": "Пушка КВ-2: стреляет динамитом. Заряжай — круг сведения сужается.",
+  "lore.myleveling.kv2_howitzer_aim": "Удерживай ПКМ для сведения, отпусти для выстрела.",
+  "boss.myleveling.kv2.spawn": "Ааааай! Башня качнулась — КВ-2 на линии огня!",
+  "boss.myleveling.kv2.aggro": "Да завали ты своё ебало, цель в прицеле!",
+  "boss.myleveling.kv2.aim": "Круг сведения… не дёргайся…",
+  "boss.myleveling.kv2.shot": "ЕСТЬ ПРОБИТИЕ! Огонь по блядскому хутору!",
+  "boss.myleveling.kv2.phase": "Лютый вазелиновый сракотан! Башня горит, но мы едем!",
+  "boss.myleveling.kv2.rage": "КОРБЕН ОРЁЁЁТ! Заряжай ещё, сука!",
+  "boss.myleveling.kv2.low_hp": "Я щас пиво пойду открою… после этого залпа.",
+  "boss.myleveling.kv2.death": "Слёт парика… башня замолчала. Вазелиновое дрисло напоследок."
 }

@@ -2,13 +2,14 @@ package com.l7cor1s.myleveling.boss;
 
 import com.l7cor1s.myleveling.MyLeveling;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.core.Holder;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -35,28 +36,36 @@ public final class BossEncounterHooks {
         }
 
         ServerPlayer player = level.players().get(level.random.nextInt(level.players().size()));
+        if (!level.getEntitiesOfClass(AbstractRankedBoss.class, player.getBoundingBox().inflate(64.0)).isEmpty()
+                || !level.getEntitiesOfClass(Kv2BossEntity.class, player.getBoundingBox().inflate(64.0)).isEmpty()) {
+            return;
+        }
+
         Holder<Biome> biome = level.getBiome(player.blockPosition());
-        BossId pick = pickForBiome(biome, level);
-        if (pick == null) {
-            return;
-        }
-
-        // Avoid stacking bosses near the player
-        if (!level.getEntitiesOfClass(AbstractRankedBoss.class, player.getBoundingBox().inflate(64.0)).isEmpty()) {
-            return;
-        }
-
         BlockPos pos = player.blockPosition().offset(level.random.nextInt(24) - 12, 0, level.random.nextInt(24) - 12);
         pos = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos);
-        EntityType<CatalogBossEntity> type = typeFor(pick);
-        CatalogBossEntity boss = type.create(level);
-        if (boss == null) {
+
+        // Very rare plains KV-2
+        if (level.dimension() == ServerLevel.OVERWORLD && !biome.is(BiomeTags.IS_OCEAN) && level.random.nextFloat() < 0.12f) {
+            spawnMob(level, ModEntities.KV2.get(), pos, player);
             return;
         }
-        boss.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.random.nextFloat() * 360f, 0);
-        boss.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.EVENT, null);
-        level.addFreshEntity(boss);
+
+        BossId pick = pickForBiome(biome, level);
+        EntityType<CatalogBossEntity> type = typeFor(pick);
+        spawnMob(level, type, pos, player);
         MyLeveling.LOGGER.debug("Spawned ranked boss {} near {}", pick.id(), player.getGameProfile().getName());
+    }
+
+    private static void spawnMob(ServerLevel level, EntityType<? extends Mob> type, BlockPos pos, ServerPlayer player) {
+        Mob mob = type.create(level);
+        if (mob == null) {
+            return;
+        }
+        mob.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.random.nextFloat() * 360f, 0);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.EVENT, null);
+        level.addFreshEntity(mob);
+        MyLeveling.LOGGER.debug("Spawned {} near {}", type.getDescriptionId(), player.getGameProfile().getName());
     }
 
     private static BossId pickForBiome(Holder<Biome> biome, ServerLevel level) {
@@ -83,7 +92,6 @@ public final class BossEncounterHooks {
             BossId[] pool = {BossId.FROST_HOWLER, BossId.GLACIAL_SOVEREIGN, BossId.THUNDER_COLOSSUS};
             return pool[level.random.nextInt(pool.length)];
         }
-        // swamp-ish / river: bog witch; plains/default mid/mini mix
         if (level.random.nextFloat() < 0.25f) {
             return BossId.BOG_WITCH;
         }

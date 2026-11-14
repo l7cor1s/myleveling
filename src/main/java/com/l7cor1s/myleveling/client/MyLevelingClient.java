@@ -29,5 +29,10 @@ public class MyLevelingClient {
                 ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "active_skills"),
                 ActiveSkillHud::render
         );
+        event.registerAbove(
+                VanillaGuiLayers.CROSSHAIR,
+                ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "howitzer_aim"),
+                HowitzerAimHud::render
+        );
     }
 }

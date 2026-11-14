@@ -145,6 +145,7 @@ public final class ModCommands {
             target.append(id.id());
         }
         source.sendSuccess(() -> Component.literal("Legacy: scout, warden, monarch"), false);
+        source.sendSuccess(() -> Component.literal("Meme: kv2 / korben / tank"), false);
         source.sendSuccess(() -> Component.literal("Mini D–C: " + mini), false);
         source.sendSuccess(() -> Component.literal("Mid B–A: " + mid), false);
         source.sendSuccess(() -> Component.literal("Large S: " + large), false);

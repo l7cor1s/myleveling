@@ -4,6 +4,7 @@ import com.l7cor1s.myleveling.boss.BossAnimState;
 import com.l7cor1s.myleveling.boss.BossId;
 import com.l7cor1s.myleveling.boss.CatalogBossEntity;
 import com.l7cor1s.myleveling.boss.GateMonarchEntity;
+import com.l7cor1s.myleveling.boss.Kv2BossEntity;
 import com.l7cor1s.myleveling.boss.ModEntities;
 import com.l7cor1s.myleveling.boss.RankWardenEntity;
 import com.l7cor1s.myleveling.boss.ShadowMinionEntity;
@@ -13,6 +14,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
@@ -27,6 +29,8 @@ public final class BossRenderers {
         event.registerEntityRenderer(ModEntities.RANK_WARDEN.get(), BossRenderers::warden);
         event.registerEntityRenderer(ModEntities.GATE_MONARCH.get(), BossRenderers::monarch);
         event.registerEntityRenderer(ModEntities.SHADOW_MINION.get(), BossRenderers::minion);
+        event.registerEntityRenderer(ModEntities.KV2.get(), BossRenderers::kv2);
+        event.registerEntityRenderer(ModEntities.DYNAMITE_PROJECTILE.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(ModEntities.GROVE_STALKER.get(), ctx -> catalog(ctx, BossId.GROVE_STALKER));
         event.registerEntityRenderer(ModEntities.DUNE_SCORPION.get(), ctx -> catalog(ctx, BossId.DUNE_SCORPION));
@@ -54,6 +58,30 @@ public final class BossRenderers {
 
     private static HumanoidMobRenderer<GateMonarchEntity, HumanoidModel<GateMonarchEntity>> monarch(EntityRendererProvider.Context ctx) {
         return plain(ctx, "textures/entity/enderdragon/dragon.png", 0.7f);
+    }
+
+    private static HumanoidMobRenderer<Kv2BossEntity, HumanoidModel<Kv2BossEntity>> kv2(EntityRendererProvider.Context ctx) {
+        return new HumanoidMobRenderer<>(ctx, new HumanoidModel<>(ctx.bakeLayer(ModelLayers.PLAYER)), 1.1f) {
+            @Override
+            public ResourceLocation getTextureLocation(Kv2BossEntity entity) {
+                return ResourceLocation.withDefaultNamespace("textures/entity/iron_golem/iron_golem.png");
+            }
+
+            @Override
+            protected void scale(Kv2BossEntity entity, PoseStack pose, float partialTick) {
+                float t = entity.tickCount + partialTick;
+                float base = 1.85f;
+                BossAnimState anim = entity.animState();
+                if (anim == BossAnimState.CAST || anim == BossAnimState.WINDUP) {
+                    // Barrel rise / recoil telegraph
+                    pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-20f - 8f * Mth.sin(t * 0.5f)));
+                    base += 0.08f * Mth.sin(t * 1.2f);
+                } else if (entity.phase() >= 3) {
+                    pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(Mth.sin(t * 0.4f) * 4f));
+                }
+                pose.scale(base * 1.35f, base, base * 1.35f);
+            }
+        };
     }
 
     private static HumanoidMobRenderer<ShadowMinionEntity, HumanoidModel<ShadowMinionEntity>> minion(EntityRendererProvider.Context ctx) {
@@ -107,16 +135,26 @@ public final class BossRenderers {
                 case LARGE -> 1.55f;
             };
             BossAnimState anim = entity.animState();
+            float t = entity.tickCount + partialTick;
             float pulse = 1f;
-            if (anim == BossAnimState.WINDUP || anim == BossAnimState.CAST) {
-                pulse = 1f + 0.08f * Mth.sin((entity.tickCount + partialTick) * 0.8f);
+            if (anim == BossAnimState.WINDUP) {
+                pulse = 1f + 0.14f * Mth.sin(t * 1.1f);
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(12f + 6f * Mth.sin(t * 0.9f)));
+            } else if (anim == BossAnimState.CAST) {
+                pulse = 1f + 0.12f * Mth.sin(t * 1.4f);
+                pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(Mth.sin(t * 0.7f) * 18f));
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-10f));
             } else if (anim == BossAnimState.DASH) {
-                pose.scale(1.15f, 0.9f, 1.15f);
+                pose.scale(1.35f, 0.78f, 1.35f);
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(25f));
                 return;
             } else if (anim == BossAnimState.STRIKE) {
-                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-18f));
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-32f));
+                pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(Mth.sin(t) * 10f));
+                pulse = 1.12f;
             } else if (anim == BossAnimState.SUMMON) {
-                pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees((entity.tickCount + partialTick) * 8f));
+                pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(t * 14f));
+                pulse = 1f + 0.1f * Mth.sin(t * 0.5f);
             }
             pose.scale(base * pulse, base * pulse, base * pulse);
         }

@@ -17,6 +17,7 @@ public final class BossEvents {
         event.put(ModEntities.RANK_WARDEN.get(), RankWardenEntity.createAttributes().build());
         event.put(ModEntities.GATE_MONARCH.get(), GateMonarchEntity.createAttributes().build());
         event.put(ModEntities.SHADOW_MINION.get(), ShadowMinionEntity.createAttributes().build());
+        event.put(ModEntities.KV2.get(), Kv2BossEntity.createAttributes().build());
 
         for (BossId id : BossId.values()) {
             event.put(typeFor(id), AbstractRankedBoss.attributesFor(id).build());

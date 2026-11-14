@@ -93,6 +93,31 @@ public abstract class AbstractRankedBoss extends Monster {
             this.level().playSound(null, this.blockPosition(),
                     state == BossAnimState.CAST || state == BossAnimState.SUMMON ? SoundEvents.EVOKER_CAST_SPELL : SoundEvents.PLAYER_ATTACK_SWEEP,
                     SoundSource.HOSTILE, 1.0f, 0.8f + this.random.nextFloat() * 0.3f);
+            telegraphBurst(state);
+        }
+    }
+
+    /** Opening particle burst when an attack telegraph starts. */
+    protected void telegraphBurst(BossAnimState state) {
+        if (!(this.level() instanceof ServerLevel server)) {
+            return;
+        }
+        SimpleParticleType type = switch (state) {
+            case WINDUP -> ParticleTypes.CRIT;
+            case STRIKE -> ParticleTypes.SWEEP_ATTACK;
+            case CAST -> ParticleTypes.ENCHANT;
+            case SUMMON -> ParticleTypes.SOUL;
+            case DASH -> ParticleTypes.CLOUD;
+            default -> ParticleTypes.SMOKE;
+        };
+        server.sendParticles(type, this.getX(), this.getY() + 1.2, this.getZ(), 28, 0.6, 0.8, 0.6, 0.08);
+        ringParticles(server, this.getX(), this.getY() + 0.1, this.getZ(), 2.2, ParticleTypes.END_ROD, 24);
+    }
+
+    protected void ringParticles(ServerLevel server, double x, double y, double z, double radius, SimpleParticleType type, int count) {
+        for (int i = 0; i < count; i++) {
+            double a = (Math.PI * 2 * i) / count;
+            server.sendParticles(type, x + Math.cos(a) * radius, y, z + Math.sin(a) * radius, 1, 0, 0.02, 0, 0);
         }
     }
 
@@ -180,8 +205,18 @@ public abstract class AbstractRankedBoss extends Monster {
                 if (resolved != BossAnimState.IDLE) {
                     onAnimResolve(resolved);
                 }
-            } else if (animState() == BossAnimState.WINDUP || animState() == BossAnimState.CAST) {
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.2, 1.0, 0.2));
+            } else if (animState() == BossAnimState.WINDUP || animState() == BossAnimState.CAST || animState() == BossAnimState.SUMMON) {
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.15, 1.0, 0.15));
+                if (this.tickCount % 4 == 0 && this.level() instanceof ServerLevel server) {
+                    BossAnimState st = animState();
+                    SimpleParticleType drip = st == BossAnimState.CAST ? ParticleTypes.WITCH
+                            : (st == BossAnimState.SUMMON ? ParticleTypes.SOUL : ParticleTypes.CRIT);
+                    server.sendParticles(drip, this.getX(), this.getY() + 1.4, this.getZ(), 8, 0.45, 0.5, 0.45, 0.02);
+                }
+            } else if (animState() == BossAnimState.DASH && this.level() instanceof ServerLevel server && this.tickCount % 2 == 0) {
+                server.sendParticles(ParticleTypes.CLOUD, this.getX(), this.getY() + 0.5, this.getZ(), 6, 0.2, 0.2, 0.2, 0.01);
+            } else if (animState() == BossAnimState.STRIKE && this.level() instanceof ServerLevel server && this.tickCount % 3 == 0) {
+                server.sendParticles(ParticleTypes.SWEEP_ATTACK, this.getX(), this.getY() + 1.0, this.getZ(), 2, 0.8, 0.2, 0.8, 0);
             }
         }
 
@@ -207,7 +242,8 @@ public abstract class AbstractRankedBoss extends Monster {
 
     protected void pulse(SimpleParticleType type) {
         if (this.level() instanceof ServerLevel server) {
-            server.sendParticles(type, this.getX(), this.getY() + 1.2, this.getZ(), 40, 1.0, 1.0, 1.0, 0.05);
+            server.sendParticles(type, this.getX(), this.getY() + 1.2, this.getZ(), 55, 1.2, 1.1, 1.2, 0.06);
+            ringParticles(server, this.getX(), this.getY() + 0.15, this.getZ(), 3.0, type, 32);
         }
     }
 
@@ -253,6 +289,14 @@ public abstract class AbstractRankedBoss extends Monster {
     private void clientAnimParticles() {
         BossAnimState state = animState();
         if (state == BossAnimState.IDLE) {
+            // Idle aura for mid/large
+            if (bossId.tier() != BossTier.MINI && this.tickCount % 8 == 0) {
+                this.level().addParticle(ParticleTypes.SMOKE,
+                        this.getX() + (this.random.nextDouble() - 0.5) * 0.8,
+                        this.getY() + 0.2,
+                        this.getZ() + (this.random.nextDouble() - 0.5) * 0.8,
+                        0, 0.02, 0);
+            }
             return;
         }
         SimpleParticleType type = switch (state) {
@@ -262,12 +306,24 @@ public abstract class AbstractRankedBoss extends Monster {
             case DASH -> ParticleTypes.CLOUD;
             default -> ParticleTypes.SMOKE;
         };
-        for (int i = 0; i < 3; i++) {
+        int count = switch (state) {
+            case CAST, SUMMON -> 10;
+            case DASH, STRIKE -> 8;
+            default -> 6;
+        };
+        for (int i = 0; i < count; i++) {
+            double ang = this.random.nextDouble() * Math.PI * 2;
+            double r = 0.4 + this.random.nextDouble() * 1.2;
             this.level().addParticle(type,
-                    this.getX() + (this.random.nextDouble() - 0.5),
-                    this.getY() + 1.0 + this.random.nextDouble(),
-                    this.getZ() + (this.random.nextDouble() - 0.5),
-                    0, 0.02, 0);
+                    this.getX() + Math.cos(ang) * r,
+                    this.getY() + 0.6 + this.random.nextDouble() * 1.4,
+                    this.getZ() + Math.sin(ang) * r,
+                    (this.random.nextDouble() - 0.5) * 0.05,
+                    0.04,
+                    (this.random.nextDouble() - 0.5) * 0.05);
+        }
+        if (state == BossAnimState.WINDUP || state == BossAnimState.CAST) {
+            this.level().addParticle(ParticleTypes.FLASH, this.getX(), this.getY() + 1.3, this.getZ(), 0, 0, 0);
         }
     }
 

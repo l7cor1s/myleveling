@@ -493,5 +493,18 @@
   "subtitles.myleveling.corben_scream": "Sound: corben_scream",
   "subtitles.myleveling.vaseline_screech": "Sound: vaseline_screech",
   "subtitles.myleveling.open_beer": "Sound: open_beer",
-  "command.myleveling.sound_unknown": "Unknown sound"
+  "command.myleveling.sound_unknown": "Unknown sound",
+  "entity.myleveling.kv2": "KV-2",
+  "entity.myleveling.dynamite_projectile": "Dynamite",
+  "item.myleveling.kv2_howitzer": "KV-2 Howitzer",
+  "lore.myleveling.kv2_howitzer": "KV-2 gun: fires dynamite. Charge to tighten the aim circle.",
+  "lore.myleveling.kv2_howitzer_aim": "Hold RMB to aim, release to fire.",
+  "boss.myleveling.kv2.spawn": "Aaaay! The turret rocks — KV-2 on the firing line!",
+  "boss.myleveling.kv2.aggro": "Shut it! Target in the sights!",
+  "boss.myleveling.kv2.aim": "Aiming circle… don't flinch…",
+  "boss.myleveling.kv2.shot": "PENETRATION! Fire on the damn village!",
+  "boss.myleveling.kv2.phase": "Turret's on fire but we keep rolling!",
+  "boss.myleveling.kv2.rage": "KORBEN SCREAMS! Load another one!",
+  "boss.myleveling.kv2.low_hp": "Gonna open a beer… after this volley.",
+  "boss.myleveling.kv2.death": "Wig drop… the turret falls silent."
 }
