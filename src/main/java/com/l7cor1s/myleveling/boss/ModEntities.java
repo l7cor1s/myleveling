@@ -93,7 +93,7 @@ public final class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<Kv2BossEntity>> KV2 =
             ENTITIES.register("kv2", () -> EntityType.Builder.of(Kv2BossEntity::new, MobCategory.MONSTER)
-                    .sized(2.8f, 3.0f).fireImmune().clientTrackingRange(16).build("kv2"));
+                    .sized(3.2f, 3.6f).fireImmune().clientTrackingRange(16).build("kv2"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<DynamiteProjectile>> DYNAMITE_PROJECTILE =
             ENTITIES.register("dynamite_projectile", () -> EntityType.Builder.<DynamiteProjectile>of(DynamiteProjectile::new, MobCategory.MISC)

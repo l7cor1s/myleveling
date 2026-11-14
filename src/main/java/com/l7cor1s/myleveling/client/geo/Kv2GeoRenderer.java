@@ -11,7 +11,7 @@ public class Kv2GeoRenderer extends GeoEntityRenderer<Kv2BossEntity> {
     public Kv2GeoRenderer(EntityRendererProvider.Context context) {
         super(context, new DefaultedEntityGeoModel<>(
                 ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "kv2"), false));
-        this.shadowRadius = 1.6f;
+        this.shadowRadius = 2.0f;
     }
 
     @Override

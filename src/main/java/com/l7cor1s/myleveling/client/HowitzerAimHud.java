@@ -1,17 +1,22 @@
 package com.l7cor1s.myleveling.client;
 
+import com.l7cor1s.myleveling.MyLeveling;
 import com.l7cor1s.myleveling.item.Kv2HowitzerItem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * WoT-style aiming circle: shrinks while charging the KV-2 howitzer.
- * Center matches vanilla crosshair ((W-1)/2, (H-1)/2).
+ * Military howitzer reticle: outer accuracy ring shrinks while charging (WoT-style),
+ * with mil ticks and a high-res base reticle texture. Center matches vanilla crosshair.
  */
 public final class HowitzerAimHud {
+    private static final ResourceLocation RETICLE =
+            ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "textures/gui/howitzer_reticle.png");
+
     private HowitzerAimHud() {
     }
 
@@ -21,49 +26,71 @@ public final class HowitzerAimHud {
         if (player == null || mc.options.hideGui || mc.screen != null) {
             return;
         }
-        if (!(player.getUseItem().getItem() instanceof Kv2HowitzerItem)
-                && !(player.getMainHandItem().getItem() instanceof Kv2HowitzerItem)) {
+        boolean holding = player.getMainHandItem().getItem() instanceof Kv2HowitzerItem
+                || player.getOffhandItem().getItem() instanceof Kv2HowitzerItem;
+        boolean charging = player.isUsingItem() && player.getUseItem().getItem() instanceof Kv2HowitzerItem;
+        if (!holding && !charging) {
             return;
         }
 
         float charge = Kv2HowitzerItem.chargeProgress(player);
-        boolean charging = player.isUsingItem() && player.getUseItem().getItem() instanceof Kv2HowitzerItem;
-        if (!charging && !(player.getMainHandItem().getItem() instanceof Kv2HowitzerItem)) {
-            return;
-        }
+        float accuracy = charging ? charge : 0f;
 
         // Match vanilla crosshair center: sprite is 15x15 at (W-15)/2 → center (W-1)/2
         int cx = (graphics.guiWidth() - 1) / 2;
         int cy = (graphics.guiHeight() - 1) / 2;
-        float accuracy = charging ? charge : 0f;
-        int radius = Math.round(Mth.lerp(accuracy, 48f, 10f));
-        int color = accuracy > 0.85f ? 0xFF6CFF8A : (accuracy > 0.4f ? 0xFFFFE082 : 0xFFFF6B6B);
 
-        drawCircle(graphics, cx, cy, radius, color);
-        drawCircle(graphics, cx, cy, Math.max(2, radius / 4), 0x88FFFFFF);
+        int color = accuracy > 0.85f ? 0xFF7CFF90 : (accuracy > 0.4f ? 0xFFE8D090 : 0xFFFF6B5A);
+        int dim = 0x88C8B878;
 
-        // Symmetric crosshair ticks around exact center
-        int tick = 6;
-        graphics.fill(cx - radius - tick, cy, cx - radius, cy + 1, color);
-        graphics.fill(cx + radius + 1, cy, cx + radius + 1 + tick, cy + 1, color);
-        graphics.fill(cx, cy - radius - tick, cx + 1, cy - radius, color);
-        graphics.fill(cx, cy + radius + 1, cx + 1, cy + radius + 1 + tick, color);
+        // High-res static military reticle (64→96 screen px)
+        int retSize = 96;
+        int rx = cx - retSize / 2;
+        int ry = cy - retSize / 2;
+        graphics.setColor(1f, 1f, 1f, charging ? 0.95f : 0.55f);
+        graphics.blit(RETICLE, rx, ry, 0, 0, retSize, retSize, retSize, retSize);
+        graphics.setColor(1f, 1f, 1f, 1f);
+
+        // Dynamic accuracy ring (shrinks as charge rises)
+        int radius = Math.round(Mth.lerp(accuracy, 56f, 12f));
+        drawRing(graphics, cx, cy, radius, color, 2);
+        drawRing(graphics, cx, cy, Math.max(3, radius / 3), dim, 1);
+
+        // Cardinal mil ticks on the accuracy ring
+        int tick = 8;
+        graphics.fill(cx - radius - tick, cy - 1, cx - radius, cy + 2, color);
+        graphics.fill(cx + radius + 1, cy - 1, cx + radius + 1 + tick, cy + 2, color);
+        graphics.fill(cx - 1, cy - radius - tick, cx + 2, cy - radius, color);
+        graphics.fill(cx - 1, cy + radius + 1, cx + 2, cy + radius + 1 + tick, color);
+
+        // Diagonal mil marks
+        int d = (int) Math.round(radius * 0.707);
+        graphics.fill(cx - d - 2, cy - d - 2, cx - d + 1, cy - d + 1, dim);
+        graphics.fill(cx + d - 1, cy - d - 2, cx + d + 2, cy - d + 1, dim);
+        graphics.fill(cx - d - 2, cy + d - 1, cx - d + 1, cy + d + 2, dim);
+        graphics.fill(cx + d - 1, cy + d - 1, cx + d + 2, cy + d + 2, dim);
+
         // Center pip
-        graphics.fill(cx, cy, cx + 1, cy + 1, 0xFFFFFFFF);
+        graphics.fill(cx - 1, cy, cx + 2, cy + 1, 0xFFFFFFFF);
+        graphics.fill(cx, cy - 1, cx + 1, cy + 2, 0xFFFFFFFF);
 
         if (charging) {
             String pct = (int) (accuracy * 100) + "%";
-            graphics.drawCenteredString(mc.font, pct, cx + 1, cy + radius + 8, color);
+            graphics.drawCenteredString(mc.font, pct, cx, cy + radius + 10, color);
+            graphics.drawCenteredString(mc.font, "КВ-2", cx, cy - radius - 12, dim);
         }
     }
 
-    private static void drawCircle(GuiGraphics graphics, int cx, int cy, int radius, int color) {
-        int steps = Math.max(48, radius * 2);
-        for (int i = 0; i < steps; i++) {
-            double a = (Math.PI * 2 * i) / steps;
-            int x = cx + (int) Math.round(Math.cos(a) * radius);
-            int y = cy + (int) Math.round(Math.sin(a) * radius);
-            graphics.fill(x, y, x + 1, y + 1, color);
+    private static void drawRing(GuiGraphics graphics, int cx, int cy, int radius, int color, int thickness) {
+        int steps = Math.max(64, radius * 3);
+        for (int t = 0; t < thickness; t++) {
+            int r = radius + t;
+            for (int i = 0; i < steps; i++) {
+                double a = (Math.PI * 2.0 * i) / steps;
+                int x = cx + (int) Math.round(Math.cos(a) * r);
+                int y = cy + (int) Math.round(Math.sin(a) * r);
+                graphics.fill(x, y, x + 1, y + 1, color);
+            }
         }
     }
 }
