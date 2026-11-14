@@ -1,0 +1,86 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:warden",
+    {
+      "id": "#c:bosses",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ender_guardian",
+      "required": false
+    },
+    {
+      "id": "cataclysm:netherite_monstrosity",
+      "required": false
+    },
+    {
+      "id": "cataclysm:the_harbinger",
+      "required": false
+    },
+    {
+      "id": "cataclysm:the_leviathan",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ancient_remnant",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:void_blossom",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:lich",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:gauntlet",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:obsidilith",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:dead_king",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:dead_king_corpse",
+      "required": false
+    },
+    {
+      "id": "alexscaves:hullbreaker",
+      "required": false
+    },
+    {
+      "id": "alexscaves:forsaken",
+      "required": false
+    },
+    {
+      "id": "alexsmobs:void_worm",
+      "required": false
+    },
+    "myleveling:shadow_scout",
+    "myleveling:rank_warden",
+    "myleveling:gate_monarch",
+    "myleveling:grove_stalker",
+    "myleveling:dune_scorpion",
+    "myleveling:frost_howler",
+    "myleveling:bog_witch",
+    "myleveling:reef_leviathan",
+    "myleveling:ash_imp_lord",
+    "myleveling:thunder_colossus",
+    "myleveling:crystal_oracle",
+    "myleveling:crimson_summoner",
+    "myleveling:abyss_knight",
+    "myleveling:sandstorm_empress",
+    "myleveling:void_reaper",
+    "myleveling:infernal_behemoth",
+    "myleveling:glacial_sovereign",
+    "myleveling:kv2"
+  ]
+}
