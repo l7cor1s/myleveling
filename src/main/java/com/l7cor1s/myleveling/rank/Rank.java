@@ -3,31 +3,31 @@ package com.l7cor1s.myleveling.rank;
 import java.util.Locale;
 
 /**
- * Player ranks. Thresholds are total XP required; progression is intentionally slow.
- * Skill points are granted when reaching the rank (not for starting E).
+ * Player ranks. Thresholds are total XP required.
+ * Passive Points are granted when reaching the rank (not for starting E).
  */
 public enum Rank {
     E(0, 0),
-    D(5_000, 2),
+    D(5_000, 1),
     C(20_000, 2),
-    B(60_000, 3),
+    B(60_000, 2),
     A(150_000, 3),
-    S(400_000, 4);
+    S(400_000, 3);
 
     private final int requiredXp;
-    private final int skillPointsOnReach;
+    private final int passivePointsOnReach;
 
-    Rank(int requiredXp, int skillPointsOnReach) {
+    Rank(int requiredXp, int passivePointsOnReach) {
         this.requiredXp = requiredXp;
-        this.skillPointsOnReach = skillPointsOnReach;
+        this.passivePointsOnReach = passivePointsOnReach;
     }
 
     public int getRequiredXp() {
         return requiredXp;
     }
 
-    public int getSkillPointsOnReach() {
-        return skillPointsOnReach;
+    public int getPassivePointsOnReach() {
+        return passivePointsOnReach;
     }
 
     public String getDisplayName() {
@@ -42,6 +42,10 @@ public enum Rank {
 
     public boolean isMax() {
         return this == S;
+    }
+
+    public boolean isAtLeast(Rank other) {
+        return ordinal() >= other.ordinal();
     }
 
     public static Rank fromXp(int xp) {

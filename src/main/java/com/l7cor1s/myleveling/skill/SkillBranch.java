@@ -4,9 +4,11 @@ import net.minecraft.network.chat.Component;
 
 public enum SkillBranch {
     MELEE("melee"),
+    RANGED("ranged"),
     MAGIC("magic"),
     ENGINEERING("engineering"),
-    SURVIVAL("survival");
+    SURVIVAL("survival"),
+    HUNTER("hunter");
 
     private final String id;
 
@@ -20,5 +22,14 @@ public enum SkillBranch {
 
     public Component getDisplayName() {
         return Component.translatable("skill.myleveling.branch." + id);
+    }
+
+    public static SkillBranch byId(String id) {
+        for (SkillBranch branch : values()) {
+            if (branch.id.equalsIgnoreCase(id)) {
+                return branch;
+            }
+        }
+        throw new IllegalArgumentException("Unknown branch: " + id);
     }
 }

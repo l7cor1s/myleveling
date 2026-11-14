@@ -9,6 +9,6 @@ public final class ProgressSync {
     }
 
     public static void sendTo(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, SyncProgressPayload.from(PlayerRankData.getProgress(player)));
+        PacketDistributor.sendToPlayer(player, new SyncProgressPayload(PlayerRankData.getProgress(player)));
     }
 }

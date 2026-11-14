@@ -7,9 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * Helpers for reading and mutating a player's stored XP / derived rank / skill points.
- */
 public final class PlayerRankData {
     private PlayerRankData() {
     }
@@ -31,10 +28,7 @@ public final class PlayerRankData {
     }
 
     /**
-     * Adds XP on the server, promotes rank if thresholds are crossed,
-     * grants skill points, and notifies the player in chat for each rank-up.
-     *
-     * @return XP actually awarded
+     * Adds combat XP, grants Skill Points every 400 XP, Passive Points on rank-up, and syncs.
      */
     public static int addXp(ServerPlayer player, int amount) {
         if (amount <= 0) {
@@ -43,25 +37,37 @@ public final class PlayerRankData {
 
         PlayerProgress progress = getProgress(player);
         Rank previous = Rank.fromXp(progress.xp());
-        int newXp = progress.xp() + amount;
-        PlayerProgress updated = progress.withXp(newXp);
+        int oldXp = progress.xp();
+        int newXp = oldXp + amount;
+
+        int gainedSkillPoints = (newXp / PlayerProgress.SKILL_POINT_XP_INTERVAL)
+                - (oldXp / PlayerProgress.SKILL_POINT_XP_INTERVAL);
+
+        PlayerProgress updated = progress.withXp(newXp).addSkillPoints(gainedSkillPoints);
 
         Rank current = Rank.fromXp(newXp);
         if (current.ordinal() > previous.ordinal()) {
             for (int i = previous.ordinal() + 1; i <= current.ordinal(); i++) {
                 Rank unlocked = Rank.values()[i];
-                updated = updated.addSkillPoints(unlocked.getSkillPointsOnReach());
+                updated = updated.addPassivePoints(unlocked.getPassivePointsOnReach());
                 player.sendSystemMessage(Component.translatable(
                         "message.myleveling.rank_up",
                         unlocked.getDisplayName()
                 ));
-                if (unlocked.getSkillPointsOnReach() > 0) {
+                if (unlocked.getPassivePointsOnReach() > 0) {
                     player.sendSystemMessage(Component.translatable(
-                            "message.myleveling.skill_points_gained",
-                            unlocked.getSkillPointsOnReach()
+                            "message.myleveling.passive_points_gained",
+                            unlocked.getPassivePointsOnReach()
                     ));
                 }
             }
+        }
+
+        if (gainedSkillPoints > 0) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.myleveling.skill_points_gained",
+                    gainedSkillPoints
+            ));
         }
 
         setProgress(player, updated);

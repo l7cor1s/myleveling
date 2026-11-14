@@ -1,7 +1,9 @@
 package com.l7cor1s.myleveling.event;
 
 import com.l7cor1s.myleveling.MyLeveling;
+import com.l7cor1s.myleveling.progress.PlayerProgress;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
+import com.l7cor1s.myleveling.skill.PlayerSkillData;
 import com.l7cor1s.myleveling.xp.MobXpCalculator;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +28,6 @@ public final class MobKillXpHandler {
             return;
         }
 
-        // PvP and MCA/villager kills are excluded from leveling XP.
         if (victim instanceof Player) {
             return;
         }
@@ -35,6 +36,16 @@ public final class MobKillXpHandler {
         if (xp <= 0) {
             return;
         }
+
+        PlayerProgress progress = PlayerSkillData.get(killer);
+        float mult = 1.0f;
+        if (progress.hasPassive("hunt_d_mob_xp")) {
+            mult += 0.10f;
+        }
+        if (progress.hasPassive("hunt_b_more_xp")) {
+            mult += 0.15f;
+        }
+        xp = Math.max(1, Math.round(xp * mult));
 
         PlayerRankData.addXp(killer, xp);
     }

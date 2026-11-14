@@ -8,8 +8,9 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="l7cor1s"
 description='''
-Player ranks, combat XP tiers, and a skill tree for NeoForge 1.21.1.
-Soft-compatible with Create, Iron's Spells, Epic Fight, Apotheosis, MCA, Farmer's Delight.
+Full progression system for NeoForge 1.21.1: ranks, Skill/Passive points,
+six branches with passives and actives, Solo Leveling style GUI and HUD.
+Soft-compatible with Create, Iron's Spells, Epic Fight, Apotheosis and more.
 '''
 
 [[dependencies.${mod_id}]]

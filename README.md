@@ -1,46 +1,35 @@
 # MyLeveling
 
-NeoForge **1.21.1** mod: slow rank progression, mob XP tiers, and a skill tree.
+NeoForge **1.21.1** progression mod: ranks, Skill/Passive points, 6 skill branches, actives with HUD cooldowns.
 
-Soft-compatible with Create, Iron's Spells 'n Spellbooks, Epic Fight, Apotheosis, MCA Reborn, Farmer's Delight, Kaleidoscope — **no hard dependencies**.
+Works standalone. Soft bonuses when Create / Iron's Spells / Epic Fight / Apotheosis are present.
 
-## Features
+## Progression
 
-### Ranks & XP
-- Ranks: **E → D → C → B → A → S** (high thresholds)
-- XP only from combat kills (not players / villagers / MCA)
-- Tiers:
-  - **Normal** — base 6 XP
-  - **Strong** — base 28 + health/10 (tag or HP ≥ 40)
-  - **Boss** — base 250 + health/4 (tag, `Boss` interface, Warden, or HP ≥ 200)
-- Pack makers can extend `#myleveling:bosses`, `#myleveling:strong_mobs`, `#myleveling:no_xp`
-
-| Rank | XP | Skill points on reach |
-|------|----|------------------------|
+| Rank | XP | Passive Points |
+|------|----|----------------|
 | E | 0 | — |
-| D | 5 000 | 2 |
+| D | 5 000 | 1 |
 | C | 20 000 | 2 |
-| B | 60 000 | 3 |
+| B | 60 000 | 2 |
 | A | 150 000 | 3 |
-| S | 400 000 | 4 |
+| S | 400 000 | 3 |
 
-### Skill tree
-Branches: **Melee**, **Magic** (ISS-themed), **Engineering** (Create-themed), **Survival**.
+- **Skill Points (SP):** 1 every **400 XP** → small permanent upgrades (HP, speed, luck, damage, mining…)
+- **Passive Points (PP):** on rank-up → choose passives (1 of 2 per rank/branch) and unlock actives
+- Mob XP tiers: Normal / Strong / Boss (datapack tags + health fallbacks)
 
-- Spend points with `/skills unlock <id>`
-- Effects use unique attribute modifiers (stack with Epic Fight / Apotheosis)
-- Progress (XP, points, unlocked skills) persists via data attachments (`copyOnDeath`)
+## Branches
 
-### System GUI
-- Press **K** to open the Solo Leveling–style skill tree
-- Glowing rank, XP bar, skill points, 4 vertical branches
-- Hover for details, click to unlock (validated on server)
+Melee · Ranged · Magic · Engineering · Survival · Hunter
 
-### Commands
-- `/rank` — rank, XP, skill points
-- `/skills` / `/skills list [branch]` — tree overview
-- `/skills info <id>` — skill details
-- `/skills unlock <id>` — unlock a skill
+Each branch: passives D→S (pick one of two) + actives at C and A.
+
+## Controls
+
+- **K** — System GUI
+- **R / F** — Active slots 1 / 2 (HUD above hotbar shows cooldown)
+- Reset button in GUI (10 gold **or** 5 levels) refunds PP
 
 ## Build
 
@@ -48,20 +37,4 @@ Branches: **Melee**, **Magic** (ISS-themed), **Engineering** (Create-themed), **
 ./gradlew build
 ```
 
-Jar: `build/libs/myleveling-0.3.0.jar`
-
-## Layout
-
-```
-com.l7cor1s.myleveling/
-  MyLeveling.java
-  attachment/ ModAttachments
-  progress/   PlayerProgress
-  rank/       Rank, PlayerRankData
-  xp/         MobTier, MobXpCalculator
-  skill/      Skills catalog + unlock API
-  event/      XP + skill sync
-  command/    /rank, /skills
-  compat/     soft ModList checks
-  tag/        entity type tags
-```
+Jar: `build/libs/myleveling-0.4.0.jar`

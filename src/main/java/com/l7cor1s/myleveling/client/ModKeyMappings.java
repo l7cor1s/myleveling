@@ -14,6 +14,20 @@ public final class ModKeyMappings {
             CATEGORY
     );
 
+    public static final KeyMapping ACTIVE_SLOT_1 = new KeyMapping(
+            "key.myleveling.active_1",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            CATEGORY
+    );
+
+    public static final KeyMapping ACTIVE_SLOT_2 = new KeyMapping(
+            "key.myleveling.active_2",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_F,
+            CATEGORY
+    );
+
     private ModKeyMappings() {
     }
 }

@@ -3,7 +3,7 @@ package com.l7cor1s.myleveling;
 import com.l7cor1s.myleveling.attachment.ModAttachments;
 import com.l7cor1s.myleveling.compat.CompatMods;
 import com.l7cor1s.myleveling.network.ModNetworking;
-import com.l7cor1s.myleveling.skill.Skills;
+import com.l7cor1s.myleveling.skill.SkillCatalog;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -16,16 +16,14 @@ public class MyLeveling {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public MyLeveling(IEventBus modEventBus) {
-        // Touch the skill catalog so static definitions load early.
-        Skills.all();
-
+        SkillCatalog.bootstrap();
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(ModNetworking::register);
         modEventBus.addListener(this::commonSetup);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("MyLeveling loaded — ranks, XP tiers, skill tree, and system GUI ready");
+        LOGGER.info("MyLeveling loaded — full progression system ready");
         CompatMods.logDetected();
     }
 }

@@ -10,7 +10,7 @@ public final class ModNetworking {
 
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1");
+        PayloadRegistrar registrar = event.registrar("2");
 
         registrar.playToClient(
                 SyncProgressPayload.TYPE,
@@ -18,14 +18,14 @@ public final class ModNetworking {
                 SyncProgressPayload::handleClient
         );
         registrar.playToServer(
-                UnlockSkillPayload.TYPE,
-                UnlockSkillPayload.STREAM_CODEC,
-                UnlockSkillPayload::handleServer
-        );
-        registrar.playToServer(
                 RequestSyncPayload.TYPE,
                 RequestSyncPayload.STREAM_CODEC,
                 RequestSyncPayload::handleServer
+        );
+        registrar.playToServer(
+                SkillActionPayload.TYPE,
+                SkillActionPayload.STREAM_CODEC,
+                SkillActionPayload::handleServer
         );
     }
 }
