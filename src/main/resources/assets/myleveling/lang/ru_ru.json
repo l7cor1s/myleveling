@@ -482,5 +482,16 @@
   "boss.myleveling.rank_warden.death": "Страж пал.",
   "boss.myleveling.gate_monarch.spawn": "[SYSTEM] Монарх Врат пробудился.",
   "boss.myleveling.gate_monarch.phase": "Новая фаза Монарха!",
-  "boss.myleveling.gate_monarch.death": "Монарх повержен."
+  "boss.myleveling.gate_monarch.death": "Монарх повержен.",
+  "subtitles.myleveling.aaaay": "Звук: aaaay",
+  "subtitles.myleveling.vaseline_drislo": "Звук: vaseline_drislo",
+  "subtitles.myleveling.shut_up": "Звук: shut_up",
+  "subtitles.myleveling.fire_on_khutor": "Звук: fire_on_khutor",
+  "subtitles.myleveling.wig_drop": "Звук: wig_drop",
+  "subtitles.myleveling.blacklist_club": "Звук: blacklist_club",
+  "subtitles.myleveling.penetration": "Звук: penetration",
+  "subtitles.myleveling.corben_scream": "Звук: corben_scream",
+  "subtitles.myleveling.vaseline_screech": "Звук: vaseline_screech",
+  "subtitles.myleveling.open_beer": "Звук: open_beer",
+  "command.myleveling.sound_unknown": "Неизвестный звук"
 }

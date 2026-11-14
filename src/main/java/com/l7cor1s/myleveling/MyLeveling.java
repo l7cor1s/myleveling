@@ -9,6 +9,7 @@ import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.network.ModNetworking;
 import com.l7cor1s.myleveling.quest.QuestCatalog;
 import com.l7cor1s.myleveling.skill.SkillCatalog;
+import com.l7cor1s.myleveling.sound.ModSounds;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -26,6 +27,7 @@ public class MyLeveling {
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModSounds.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
 
         // Quest catalog references items; bootstrap after item deferred register exists.

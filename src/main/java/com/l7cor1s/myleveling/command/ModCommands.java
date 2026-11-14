@@ -7,6 +7,7 @@ import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
 import com.l7cor1s.myleveling.rank.Rank;
+import com.l7cor1s.myleveling.sound.ModSounds;
 import com.l7cor1s.myleveling.xp.MobTier;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -18,6 +19,8 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -61,7 +64,11 @@ public final class ModCommands {
                 .then(Commands.literal("listbosses")
                         .executes(ctx -> listBosses(ctx.getSource())))
                 .then(Commands.literal("givekey")
-                        .executes(ctx -> giveKey(ctx.getSource()))));
+                        .executes(ctx -> giveKey(ctx.getSource())))
+                .then(Commands.literal("sound")
+                        .then(Commands.argument("id", StringArgumentType.word())
+                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ModSounds.ids(), builder))
+                                .executes(ctx -> playSound(ctx.getSource(), StringArgumentType.getString(ctx, "id"))))));
     }
 
     private static int showRank(CommandSourceStack source) {
@@ -155,5 +162,30 @@ public final class ModCommands {
         player.addItem(new ItemStack(ModItems.GATE_KEY.get()));
         source.sendSuccess(() -> Component.translatable("command.myleveling.gave_key"), true);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int playSound(CommandSourceStack source, String id) {
+        ServerPlayer player;
+        try {
+            player = source.getPlayerOrException();
+        } catch (Exception e) {
+            source.sendFailure(Component.translatable("command.myleveling.rank.players_only"));
+            return 0;
+        }
+        OptionalSound sound = OptionalSound.of(id);
+        if (sound.event == null) {
+            source.sendFailure(Component.literal("Unknown sound: " + id));
+            return 0;
+        }
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                sound.event, SoundSource.MASTER, 1.0f, 1.0f);
+        source.sendSuccess(() -> Component.literal("Playing myleveling:" + id), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private record OptionalSound(SoundEvent event) {
+        static OptionalSound of(String id) {
+            return new OptionalSound(ModSounds.byId(id).orElse(null));
+        }
     }
 }

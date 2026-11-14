@@ -482,5 +482,16 @@
   "boss.myleveling.rank_warden.death": "The Warden falls.",
   "boss.myleveling.gate_monarch.spawn": "[SYSTEM] Gate Monarch awakened.",
   "boss.myleveling.gate_monarch.phase": "Monarch phase shift!",
-  "boss.myleveling.gate_monarch.death": "The Monarch is defeated."
+  "boss.myleveling.gate_monarch.death": "The Monarch is defeated.",
+  "subtitles.myleveling.aaaay": "Sound: aaaay",
+  "subtitles.myleveling.vaseline_drislo": "Sound: vaseline_drislo",
+  "subtitles.myleveling.shut_up": "Sound: shut_up",
+  "subtitles.myleveling.fire_on_khutor": "Sound: fire_on_khutor",
+  "subtitles.myleveling.wig_drop": "Sound: wig_drop",
+  "subtitles.myleveling.blacklist_club": "Sound: blacklist_club",
+  "subtitles.myleveling.penetration": "Sound: penetration",
+  "subtitles.myleveling.corben_scream": "Sound: corben_scream",
+  "subtitles.myleveling.vaseline_screech": "Sound: vaseline_screech",
+  "subtitles.myleveling.open_beer": "Sound: open_beer",
+  "command.myleveling.sound_unknown": "Unknown sound"
 }
