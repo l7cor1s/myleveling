@@ -1,11 +1,8 @@
 package com.l7cor1s.myleveling.quest;
 
 import com.l7cor1s.myleveling.MyLeveling;
-import com.l7cor1s.myleveling.boss.AbstractRankedBoss;
-import com.l7cor1s.myleveling.boss.GateMonarchEntity;
 import com.l7cor1s.myleveling.boss.Kv2BossEntity;
-import com.l7cor1s.myleveling.boss.RankWardenEntity;
-import com.l7cor1s.myleveling.boss.ShadowScoutEntity;
+import com.l7cor1s.myleveling.boss.RankedBoss;
 import com.l7cor1s.myleveling.tag.ModEntityTags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,10 +29,7 @@ public final class QuestEvents {
             return;
         }
         PlayerQuestData.onMobKilled(player, victim);
-        boolean rankedBoss = victim instanceof AbstractRankedBoss
-                || victim instanceof ShadowScoutEntity
-                || victim instanceof RankWardenEntity
-                || victim instanceof GateMonarchEntity
+        boolean rankedBoss = victim instanceof RankedBoss
                 || victim instanceof Kv2BossEntity
                 || victim.getType().is(ModEntityTags.BOSSES);
         if (rankedBoss) {

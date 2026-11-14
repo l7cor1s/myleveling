@@ -1,6 +1,6 @@
 package com.l7cor1s.myleveling.gate;
 
-import com.l7cor1s.myleveling.boss.GateMonarchEntity;
+import com.l7cor1s.myleveling.boss.WitherSkeletonRankBoss;
 import com.l7cor1s.myleveling.boss.ModEntities;
 import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.rank.PlayerRankData;
@@ -62,7 +62,7 @@ public class RankGateBlock extends Block {
 
         stack.shrink(1);
         if (level instanceof ServerLevel serverLevel) {
-            GateMonarchEntity boss = ModEntities.GATE_MONARCH.get().create(serverLevel);
+            WitherSkeletonRankBoss boss = ModEntities.GATE_MONARCH.get().create(serverLevel);
             if (boss != null) {
                 boss.moveTo(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, player.getYRot(), 0);
                 serverLevel.addFreshEntity(boss);

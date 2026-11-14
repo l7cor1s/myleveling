@@ -17,52 +17,89 @@ public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(Registries.ENTITY_TYPE, MyLeveling.MOD_ID);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<ShadowScoutEntity>> SHADOW_SCOUT =
-            ENTITIES.register("shadow_scout", () -> EntityType.Builder.of(ShadowScoutEntity::new, MobCategory.MONSTER)
-                    .sized(0.7f, 1.95f).clientTrackingRange(10).build("shadow_scout"));
+    // Legacy names → vanilla reskins
+    public static final DeferredHolder<EntityType<?>, EntityType<VindicatorRankBoss>> SHADOW_SCOUT =
+            ENTITIES.register("shadow_scout", () -> EntityType.Builder.of(VindicatorRankBoss::scout, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(10).build("shadow_scout"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<RankWardenEntity>> RANK_WARDEN =
-            ENTITIES.register("rank_warden", () -> EntityType.Builder.of(RankWardenEntity::new, MobCategory.MONSTER)
-                    .sized(0.9f, 2.4f).clientTrackingRange(12).build("rank_warden"));
+    public static final DeferredHolder<EntityType<?>, EntityType<RavagerRankBoss>> RANK_WARDEN =
+            ENTITIES.register("rank_warden", () -> EntityType.Builder.of(RavagerRankBoss::warden, MobCategory.MONSTER)
+                    .sized(1.95f, 2.2f).clientTrackingRange(12).build("rank_warden"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<GateMonarchEntity>> GATE_MONARCH =
-            ENTITIES.register("gate_monarch", () -> EntityType.Builder.of(GateMonarchEntity::new, MobCategory.MONSTER)
-                    .sized(1.1f, 2.8f).fireImmune().clientTrackingRange(16).build("gate_monarch"));
+    public static final DeferredHolder<EntityType<?>, EntityType<WitherSkeletonRankBoss>> GATE_MONARCH =
+            ENTITIES.register("gate_monarch", () -> EntityType.Builder.of(WitherSkeletonRankBoss::monarch, MobCategory.MONSTER)
+                    .sized(0.7f, 2.4f).fireImmune().clientTrackingRange(16).build("gate_monarch"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ShadowMinionEntity>> SHADOW_MINION =
             ENTITIES.register("shadow_minion", () -> EntityType.Builder.of(ShadowMinionEntity::new, MobCategory.MONSTER)
-                    .sized(0.6f, 1.6f).clientTrackingRange(8).build("shadow_minion"));
+                    .sized(0.6f, 1.95f).clientTrackingRange(8).build("shadow_minion"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> GROVE_STALKER = catalog("grove_stalker", CatalogBossEntity::grove, 0.7f, 1.9f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> DUNE_SCORPION = catalog("dune_scorpion", CatalogBossEntity::dune, 1.0f, 1.2f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> FROST_HOWLER = catalog("frost_howler", CatalogBossEntity::frost, 0.8f, 1.8f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> BOG_WITCH = catalog("bog_witch", CatalogBossEntity::bog, 0.7f, 1.95f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> REEF_LEVIATHAN = catalog("reef_leviathan", CatalogBossEntity::reef, 1.2f, 1.4f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> ASH_IMP_LORD = catalog("ash_imp_lord", CatalogBossEntity::ash, 0.7f, 1.8f, true);
+    // Catalog → vanilla reskins
+    public static final DeferredHolder<EntityType<?>, EntityType<ZombieRankBoss>> GROVE_STALKER =
+            ENTITIES.register("grove_stalker", () -> EntityType.Builder.of(ZombieRankBoss::grove, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(10).build("grove_stalker"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> THUNDER_COLOSSUS = catalog("thunder_colossus", CatalogBossEntity::thunder, 1.2f, 2.8f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> CRYSTAL_ORACLE = catalog("crystal_oracle", CatalogBossEntity::crystal, 0.8f, 2.4f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> CRIMSON_SUMMONER = catalog("crimson_summoner", CatalogBossEntity::crimson, 0.9f, 2.2f, true);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> ABYSS_KNIGHT = catalog("abyss_knight", CatalogBossEntity::abyss, 1.0f, 2.6f, false);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> SANDSTORM_EMPRESS = catalog("sandstorm_empress", CatalogBossEntity::sand, 0.8f, 2.3f, false);
+    public static final DeferredHolder<EntityType<?>, EntityType<CaveSpiderRankBoss>> DUNE_SCORPION =
+            ENTITIES.register("dune_scorpion", () -> EntityType.Builder.of(CaveSpiderRankBoss::dune, MobCategory.MONSTER)
+                    .sized(0.7f, 0.5f).clientTrackingRange(10).build("dune_scorpion"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> VOID_REAPER = catalog("void_reaper", CatalogBossEntity::voidReaper, 0.9f, 2.5f, true);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> INFERNAL_BEHEMOTH = catalog("infernal_behemoth", CatalogBossEntity::behemoth, 1.4f, 3.0f, true);
-    public static final DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> GLACIAL_SOVEREIGN = catalog("glacial_sovereign", CatalogBossEntity::glacial, 1.1f, 2.7f, false);
+    public static final DeferredHolder<EntityType<?>, EntityType<StrayRankBoss>> FROST_HOWLER =
+            ENTITIES.register("frost_howler", () -> EntityType.Builder.of(StrayRankBoss::frost, MobCategory.MONSTER)
+                    .sized(0.6f, 1.99f).clientTrackingRange(10).build("frost_howler"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<WitchRankBoss>> BOG_WITCH =
+            ENTITIES.register("bog_witch", () -> EntityType.Builder.of(WitchRankBoss::bog, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(10).build("bog_witch"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ElderGuardianRankBoss>> REEF_LEVIATHAN =
+            ENTITIES.register("reef_leviathan", () -> EntityType.Builder.of(ElderGuardianRankBoss::reef, MobCategory.MONSTER)
+                    .sized(1.9975f, 1.9975f).clientTrackingRange(12).build("reef_leviathan"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BlazeRankBoss>> ASH_IMP_LORD =
+            ENTITIES.register("ash_imp_lord", () -> EntityType.Builder.of(BlazeRankBoss::ash, MobCategory.MONSTER)
+                    .sized(0.6f, 1.8f).fireImmune().clientTrackingRange(10).build("ash_imp_lord"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<RavagerRankBoss>> THUNDER_COLOSSUS =
+            ENTITIES.register("thunder_colossus", () -> EntityType.Builder.of(RavagerRankBoss::thunder, MobCategory.MONSTER)
+                    .sized(1.95f, 2.2f).clientTrackingRange(12).build("thunder_colossus"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<EvokerRankBoss>> CRYSTAL_ORACLE =
+            ENTITIES.register("crystal_oracle", () -> EntityType.Builder.of(EvokerRankBoss::crystal, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(12).build("crystal_oracle"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<PiglinBruteRankBoss>> CRIMSON_SUMMONER =
+            ENTITIES.register("crimson_summoner", () -> EntityType.Builder.of(PiglinBruteRankBoss::crimson, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(12).build("crimson_summoner"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DrownedRankBoss>> ABYSS_KNIGHT =
+            ENTITIES.register("abyss_knight", () -> EntityType.Builder.of(DrownedRankBoss::abyss, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(12).build("abyss_knight"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<HuskRankBoss>> SANDSTORM_EMPRESS =
+            ENTITIES.register("sandstorm_empress", () -> EntityType.Builder.of(HuskRankBoss::sand, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(12).build("sandstorm_empress"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<EndermanRankBoss>> VOID_REAPER =
+            ENTITIES.register("void_reaper", () -> EntityType.Builder.of(EndermanRankBoss::voidReaper, MobCategory.MONSTER)
+                    .sized(0.6f, 2.9f).clientTrackingRange(12).build("void_reaper"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<RavagerRankBoss>> INFERNAL_BEHEMOTH =
+            ENTITIES.register("infernal_behemoth", () -> EntityType.Builder.of(RavagerRankBoss::behemoth, MobCategory.MONSTER)
+                    .sized(1.95f, 2.2f).fireImmune().clientTrackingRange(14).build("infernal_behemoth"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<EvokerRankBoss>> GLACIAL_SOVEREIGN =
+            ENTITIES.register("glacial_sovereign", () -> EntityType.Builder.of(EvokerRankBoss::glacial, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f).clientTrackingRange(14).build("glacial_sovereign"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<Kv2BossEntity>> KV2 =
             ENTITIES.register("kv2", () -> EntityType.Builder.of(Kv2BossEntity::new, MobCategory.MONSTER)
-                    .sized(2.2f, 2.6f).fireImmune().clientTrackingRange(16).build("kv2"));
+                    .sized(2.8f, 3.0f).fireImmune().clientTrackingRange(16).build("kv2"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<DynamiteProjectile>> DYNAMITE_PROJECTILE =
             ENTITIES.register("dynamite_projectile", () -> EntityType.Builder.<DynamiteProjectile>of(DynamiteProjectile::new, MobCategory.MISC)
                     .sized(0.4f, 0.4f).clientTrackingRange(8).updateInterval(10).build("dynamite_projectile"));
 
     private static final Map<String, DeferredHolder<EntityType<?>, ? extends EntityType<?>>> BY_ALIAS = new LinkedHashMap<>();
-
-    static {
-        // aliases filled after holders exist — populated in registerAliases()
-    }
 
     private ModEntities() {
     }
@@ -140,21 +177,26 @@ public final class ModEntities {
         return BY_ALIAS.keySet();
     }
 
-    private static DeferredHolder<EntityType<?>, EntityType<CatalogBossEntity>> catalog(
-            String id,
-            EntityType.EntityFactory<CatalogBossEntity> factory,
-            float width,
-            float height,
-            boolean fireImmune
-    ) {
-        return ENTITIES.register(id, () -> {
-            EntityType.Builder<CatalogBossEntity> builder = EntityType.Builder.of(factory, MobCategory.MONSTER)
-                    .sized(width, height)
-                    .clientTrackingRange(14);
-            if (fireImmune) {
-                builder.fireImmune();
-            }
-            return builder.build(id);
-        });
+    @SuppressWarnings("unchecked")
+    public static EntityType<? extends net.minecraft.world.entity.Mob> typeFor(BossId id) {
+        return (EntityType<? extends net.minecraft.world.entity.Mob>) switch (id) {
+            case SHADOW_SCOUT -> SHADOW_SCOUT.get();
+            case RANK_WARDEN -> RANK_WARDEN.get();
+            case GATE_MONARCH -> GATE_MONARCH.get();
+            case GROVE_STALKER -> GROVE_STALKER.get();
+            case DUNE_SCORPION -> DUNE_SCORPION.get();
+            case FROST_HOWLER -> FROST_HOWLER.get();
+            case BOG_WITCH -> BOG_WITCH.get();
+            case REEF_LEVIATHAN -> REEF_LEVIATHAN.get();
+            case ASH_IMP_LORD -> ASH_IMP_LORD.get();
+            case THUNDER_COLOSSUS -> THUNDER_COLOSSUS.get();
+            case CRYSTAL_ORACLE -> CRYSTAL_ORACLE.get();
+            case CRIMSON_SUMMONER -> CRIMSON_SUMMONER.get();
+            case ABYSS_KNIGHT -> ABYSS_KNIGHT.get();
+            case SANDSTORM_EMPRESS -> SANDSTORM_EMPRESS.get();
+            case VOID_REAPER -> VOID_REAPER.get();
+            case INFERNAL_BEHEMOTH -> INFERNAL_BEHEMOTH.get();
+            case GLACIAL_SOVEREIGN -> GLACIAL_SOVEREIGN.get();
+        };
     }
 }

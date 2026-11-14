@@ -119,6 +119,9 @@ public final class BossLootHelper {
 
     private static ItemStack uniqueFor(BossId id) {
         return switch (id) {
+            case SHADOW_SCOUT -> stack(ModItems.RANK_D_RING);
+            case RANK_WARDEN -> stack(ModItems.RANK_B_CHEST);
+            case GATE_MONARCH -> stack(ModItems.RANK_S_CROWN);
             case GROVE_STALKER -> stack(ModItems.GROVE_FANG);
             case DUNE_SCORPION -> stack(ModItems.SCORPION_STINGER);
             case FROST_HOWLER -> stack(ModItems.FROST_CORE);

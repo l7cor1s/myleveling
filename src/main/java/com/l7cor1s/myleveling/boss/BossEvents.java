@@ -1,11 +1,7 @@
 package com.l7cor1s.myleveling.boss;
 
-import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 
 public final class BossEvents {
     private BossEvents() {
@@ -13,45 +9,25 @@ public final class BossEvents {
 
     @SubscribeEvent
     public static void onAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.SHADOW_SCOUT.get(), ShadowScoutEntity.createAttributes().build());
-        event.put(ModEntities.RANK_WARDEN.get(), RankWardenEntity.createAttributes().build());
-        event.put(ModEntities.GATE_MONARCH.get(), GateMonarchEntity.createAttributes().build());
+        event.put(ModEntities.SHADOW_SCOUT.get(), VindicatorRankBoss.createAttributes(BossId.SHADOW_SCOUT).build());
+        event.put(ModEntities.RANK_WARDEN.get(), RavagerRankBoss.createAttributes(BossId.RANK_WARDEN).build());
+        event.put(ModEntities.GATE_MONARCH.get(), WitherSkeletonRankBoss.createAttributes(BossId.GATE_MONARCH).build());
         event.put(ModEntities.SHADOW_MINION.get(), ShadowMinionEntity.createAttributes().build());
         event.put(ModEntities.KV2.get(), Kv2BossEntity.createAttributes().build());
 
-        for (BossId id : BossId.values()) {
-            event.put(typeFor(id), AbstractRankedBoss.attributesFor(id).build());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-        for (BossId id : BossId.values()) {
-            event.register(typeFor(id), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                    Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
-        }
-        event.register(ModEntities.SHADOW_SCOUT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
-        event.register(ModEntities.RANK_WARDEN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
-    }
-
-    private static net.minecraft.world.entity.EntityType<CatalogBossEntity> typeFor(BossId id) {
-        return switch (id) {
-            case GROVE_STALKER -> ModEntities.GROVE_STALKER.get();
-            case DUNE_SCORPION -> ModEntities.DUNE_SCORPION.get();
-            case FROST_HOWLER -> ModEntities.FROST_HOWLER.get();
-            case BOG_WITCH -> ModEntities.BOG_WITCH.get();
-            case REEF_LEVIATHAN -> ModEntities.REEF_LEVIATHAN.get();
-            case ASH_IMP_LORD -> ModEntities.ASH_IMP_LORD.get();
-            case THUNDER_COLOSSUS -> ModEntities.THUNDER_COLOSSUS.get();
-            case CRYSTAL_ORACLE -> ModEntities.CRYSTAL_ORACLE.get();
-            case CRIMSON_SUMMONER -> ModEntities.CRIMSON_SUMMONER.get();
-            case ABYSS_KNIGHT -> ModEntities.ABYSS_KNIGHT.get();
-            case SANDSTORM_EMPRESS -> ModEntities.SANDSTORM_EMPRESS.get();
-            case VOID_REAPER -> ModEntities.VOID_REAPER.get();
-            case INFERNAL_BEHEMOTH -> ModEntities.INFERNAL_BEHEMOTH.get();
-            case GLACIAL_SOVEREIGN -> ModEntities.GLACIAL_SOVEREIGN.get();
-        };
+        event.put(ModEntities.GROVE_STALKER.get(), ZombieRankBoss.createAttributes(BossId.GROVE_STALKER).build());
+        event.put(ModEntities.DUNE_SCORPION.get(), CaveSpiderRankBoss.createAttributes(BossId.DUNE_SCORPION).build());
+        event.put(ModEntities.FROST_HOWLER.get(), StrayRankBoss.createAttributes(BossId.FROST_HOWLER).build());
+        event.put(ModEntities.BOG_WITCH.get(), WitchRankBoss.createAttributes(BossId.BOG_WITCH).build());
+        event.put(ModEntities.REEF_LEVIATHAN.get(), ElderGuardianRankBoss.createAttributes(BossId.REEF_LEVIATHAN).build());
+        event.put(ModEntities.ASH_IMP_LORD.get(), BlazeRankBoss.createAttributes(BossId.ASH_IMP_LORD).build());
+        event.put(ModEntities.THUNDER_COLOSSUS.get(), RavagerRankBoss.createAttributes(BossId.THUNDER_COLOSSUS).build());
+        event.put(ModEntities.CRYSTAL_ORACLE.get(), EvokerRankBoss.createAttributes(BossId.CRYSTAL_ORACLE).build());
+        event.put(ModEntities.CRIMSON_SUMMONER.get(), PiglinBruteRankBoss.createAttributes(BossId.CRIMSON_SUMMONER).build());
+        event.put(ModEntities.ABYSS_KNIGHT.get(), DrownedRankBoss.createAttributes(BossId.ABYSS_KNIGHT).build());
+        event.put(ModEntities.SANDSTORM_EMPRESS.get(), HuskRankBoss.createAttributes(BossId.SANDSTORM_EMPRESS).build());
+        event.put(ModEntities.VOID_REAPER.get(), EndermanRankBoss.createAttributes(BossId.VOID_REAPER).build());
+        event.put(ModEntities.INFERNAL_BEHEMOTH.get(), RavagerRankBoss.createAttributes(BossId.INFERNAL_BEHEMOTH).build());
+        event.put(ModEntities.GLACIAL_SOVEREIGN.get(), EvokerRankBoss.createAttributes(BossId.GLACIAL_SOVEREIGN).build());
     }
 }
