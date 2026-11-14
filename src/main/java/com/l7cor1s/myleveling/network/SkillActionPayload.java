@@ -2,6 +2,7 @@ package com.l7cor1s.myleveling.network;
 
 import com.l7cor1s.myleveling.MyLeveling;
 import com.l7cor1s.myleveling.effect.ActiveSkillExecutor;
+import com.l7cor1s.myleveling.quest.PlayerQuestData;
 import com.l7cor1s.myleveling.skill.PlayerSkillData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,8 +13,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * Client → server skill actions.
- * action: 0 buy minor, 1 select passive, 2 unlock active, 3 equip active, 4 activate slot, 5 reset
+ * Client → server actions.
+ * 0 buy minor, 1 select passive, 2 unlock active, 3 equip active,
+ * 4 activate slot, 5 reset, 6 accept quest, 7 turn in quest
  */
 public record SkillActionPayload(int action, String id, int slot) implements CustomPacketPayload {
     public static final int BUY_MINOR = 0;
@@ -22,6 +24,8 @@ public record SkillActionPayload(int action, String id, int slot) implements Cus
     public static final int EQUIP_ACTIVE = 3;
     public static final int ACTIVATE_SLOT = 4;
     public static final int RESET = 5;
+    public static final int ACCEPT_QUEST = 6;
+    public static final int TURN_IN_QUEST = 7;
 
     public static final Type<SkillActionPayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "skill_action")
@@ -58,6 +62,14 @@ public record SkillActionPayload(int action, String id, int slot) implements Cus
         return new SkillActionPayload(RESET, "", 0);
     }
 
+    public static SkillActionPayload acceptQuest(String id) {
+        return new SkillActionPayload(ACCEPT_QUEST, id, 0);
+    }
+
+    public static SkillActionPayload turnInQuest(String id) {
+        return new SkillActionPayload(TURN_IN_QUEST, id, 0);
+    }
+
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
@@ -75,6 +87,8 @@ public record SkillActionPayload(int action, String id, int slot) implements Cus
                 case EQUIP_ACTIVE -> PlayerSkillData.equipActive(player, payload.slot(), payload.id());
                 case ACTIVATE_SLOT -> ActiveSkillExecutor.activateSlot(player, payload.slot());
                 case RESET -> PlayerSkillData.resetTree(player);
+                case ACCEPT_QUEST -> PlayerQuestData.accept(player, payload.id());
+                case TURN_IN_QUEST -> PlayerQuestData.turnIn(player, payload.id());
                 default -> {
                 }
             }

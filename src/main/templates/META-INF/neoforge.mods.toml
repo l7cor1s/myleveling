@@ -8,9 +8,8 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="l7cor1s"
 description='''
-Full progression system for NeoForge 1.21.1: ranks, Skill/Passive points,
-six branches with passives and actives, Solo Leveling style GUI and HUD.
-Soft-compatible with Create, Iron's Spells, Epic Fight, Apotheosis and more.
+Full progression for NeoForge 1.21.1: ranks, SP/PP, actives D–S, quest journal,
+bosses, ranked loot, Rank Gate endgame. Soft Create / ISS / EF / Apotheosis / MCA.
 '''
 
 [[dependencies.${mod_id}]]

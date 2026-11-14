@@ -1,7 +1,10 @@
 package com.l7cor1s.myleveling.client;
 
+import com.l7cor1s.myleveling.compat.CompatMods;
 import com.l7cor1s.myleveling.network.SkillActionPayload;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
+import com.l7cor1s.myleveling.quest.QuestCatalog;
+import com.l7cor1s.myleveling.quest.QuestDefinition;
 import com.l7cor1s.myleveling.rank.Rank;
 import com.l7cor1s.myleveling.skill.ActiveSkill;
 import com.l7cor1s.myleveling.skill.MinorUpgrade;
@@ -28,9 +31,9 @@ public class SkillTreeScreen extends Screen {
     private static final int TEXT = 0xFFE8ECFF;
     private static final int TEXT_DIM = 0xFF8A93B8;
 
-    private enum Tab { MINORS, MELEE, RANGED, MAGIC, ENGINEERING, SURVIVAL, HUNTER }
+    private enum Tab { QUESTS, MINORS, MELEE, RANGED, MAGIC, ENGINEERING, SURVIVAL, HUNTER }
 
-    private Tab tab = Tab.MELEE;
+    private Tab tab = Tab.QUESTS;
     private final List<ClickZone> zones = new ArrayList<>();
     private Component hoveredTooltip;
 
@@ -52,8 +55,8 @@ public class SkillTreeScreen extends Screen {
         PlayerProgress progress = ClientProgressCache.get();
         Rank rank = Rank.fromXp(progress.xp());
 
-        int panelW = Math.min(this.width - 20, 420);
-        int panelH = Math.min(this.height - 16, 310);
+        int panelW = Math.min(this.width - 16, 460);
+        int panelH = Math.min(this.height - 12, 320);
         int panelX = (this.width - panelW) / 2;
         int panelY = Math.max(6, (this.height - panelH) / 2);
 
@@ -134,6 +137,10 @@ public class SkillTreeScreen extends Screen {
         int contentY = panelY + 98;
         int contentW = panelW - 24;
 
+        if (tab == Tab.QUESTS) {
+            drawQuests(graphics, contentX, contentY, contentW, progress);
+            return;
+        }
         if (tab == Tab.MINORS) {
             drawMinors(graphics, contentX, contentY, contentW, progress, mouseX, mouseY);
             return;
@@ -215,6 +222,40 @@ public class SkillTreeScreen extends Screen {
                 }
             }
             y += 20;
+        }
+    }
+
+    private void drawQuests(GuiGraphics graphics, int x, int y, int w, PlayerProgress progress) {
+        graphics.drawString(this.font, Component.translatable("screen.myleveling.quests_title"), x, y, ACCENT, false);
+        if (progress.monarchDefeated()) {
+            graphics.drawString(this.font, Component.translatable("screen.myleveling.goal_done"), x, y + 10, 0xFFFFE082, false);
+        } else {
+            graphics.drawString(this.font, Component.translatable("screen.myleveling.goal_hint"), x, y + 10, TEXT_DIM, false);
+        }
+
+        int row = y + 24;
+        for (QuestDefinition quest : QuestCatalog.availableFor(progress, CompatMods.isLoaded(CompatMods.MCA))) {
+            if (row > y + 180) {
+                break;
+            }
+            boolean active = progress.activeQuests().contains(quest.id());
+            boolean done = progress.completedQuests().contains(quest.id());
+            int cur = progress.questCount(quest.id());
+            String line = quest.title().getString() + " [" + quest.kind().name() + "] "
+                    + (active ? cur + "/" + quest.targetCount() : (done ? "✓" : "·"));
+            graphics.fill(x, row, x + w, row + 16, active ? 0xFF1A2A55 : 0xFF10141F);
+            graphics.renderOutline(x, row, w, 16, active ? ACCENT : 0xFF2A3148);
+            graphics.drawString(this.font, this.font.plainSubstrByWidth(line, w - 8), x + 4, row + 4, TEXT, false);
+
+            int finalRow = row;
+            zones.add(new ClickZone(x, finalRow, w, 16, () -> {
+                if (active && cur >= quest.targetCount()) {
+                    PacketDistributor.sendToServer(SkillActionPayload.turnInQuest(quest.id()));
+                } else if (!active) {
+                    PacketDistributor.sendToServer(SkillActionPayload.acceptQuest(quest.id()));
+                }
+            }, Component.empty().append(quest.title()).append(" — ").append(quest.description())));
+            row += 18;
         }
     }
 
@@ -309,6 +350,7 @@ public class SkillTreeScreen extends Screen {
 
     private static String tabLabel(Tab tab) {
         return switch (tab) {
+            case QUESTS -> "QV";
             case MINORS -> "SP";
             case MELEE -> "ML";
             case RANGED -> "RG";

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Persistent leveling state: XP, Skill/Passive points, minors, passives, actives, mana, cooldowns.
+ * Persistent leveling / quest / endgame state.
  */
 public record PlayerProgress(
         int xp,
@@ -25,7 +25,12 @@ public record PlayerProgress(
         Set<String> unlockedActives,
         List<String> equippedActives,
         Map<String, Long> cooldownEnds,
-        float mana
+        float mana,
+        Set<String> activeQuests,
+        Set<String> completedQuests,
+        Map<String, Integer> questProgress,
+        long dailyQuestDay,
+        boolean monarchDefeated
 ) {
     public static final int SKILL_POINT_XP_INTERVAL = 400;
     public static final int MAX_EQUIPPED_ACTIVES = 2;
@@ -33,7 +38,8 @@ public record PlayerProgress(
     public static final int RESET_LEVEL_COST = 5;
 
     public static final PlayerProgress EMPTY = new PlayerProgress(
-            0, 0, 0, Map.of(), Set.of(), Set.of(), List.of(), Map.of(), BASE_MAX_MANA
+            0, 0, 0, Map.of(), Set.of(), Set.of(), List.of(), Map.of(), BASE_MAX_MANA,
+            Set.of(), Set.of(), Map.of(), 0L, false
     );
 
     public static final Codec<PlayerProgress> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -47,12 +53,18 @@ public record PlayerProgress(
                     .optionalFieldOf("unlocked_actives", Set.of()).forGetter(PlayerProgress::unlockedActives),
             Codec.STRING.listOf().optionalFieldOf("equipped_actives", List.of()).forGetter(PlayerProgress::equippedActives),
             Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("cooldown_ends", Map.of()).forGetter(PlayerProgress::cooldownEnds),
-            Codec.FLOAT.optionalFieldOf("mana", BASE_MAX_MANA).forGetter(PlayerProgress::mana)
+            Codec.FLOAT.optionalFieldOf("mana", BASE_MAX_MANA).forGetter(PlayerProgress::mana),
+            Codec.STRING.listOf().xmap(PlayerProgress::toSet, PlayerProgress::toList)
+                    .optionalFieldOf("active_quests", Set.of()).forGetter(PlayerProgress::activeQuests),
+            Codec.STRING.listOf().xmap(PlayerProgress::toSet, PlayerProgress::toList)
+                    .optionalFieldOf("completed_quests", Set.of()).forGetter(PlayerProgress::completedQuests),
+            Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("quest_progress", Map.of()).forGetter(PlayerProgress::questProgress),
+            Codec.LONG.optionalFieldOf("daily_quest_day", 0L).forGetter(PlayerProgress::dailyQuestDay),
+            Codec.BOOL.optionalFieldOf("monarch_defeated", false).forGetter(PlayerProgress::monarchDefeated)
     ).apply(instance, PlayerProgress::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PlayerProgress> STREAM_CODEC = StreamCodec.of(
-            PlayerProgress::write,
-            PlayerProgress::read
+            PlayerProgress::write, PlayerProgress::read
     );
 
     public PlayerProgress {
@@ -61,14 +73,17 @@ public record PlayerProgress(
         unlockedActives = Set.copyOf(unlockedActives);
         equippedActives = List.copyOf(equippedActives);
         cooldownEnds = Map.copyOf(cooldownEnds);
+        activeQuests = Set.copyOf(activeQuests);
+        completedQuests = Set.copyOf(completedQuests);
+        questProgress = Map.copyOf(questProgress);
     }
 
     public PlayerProgress withXp(int newXp) {
-        return copy(newXp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana);
+        return copy(newXp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withSkillPoints(int points) {
-        return copy(xp, Math.max(0, points), passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana);
+        return copy(xp, Math.max(0, points), passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress addSkillPoints(int amount) {
@@ -76,7 +91,7 @@ public record PlayerProgress(
     }
 
     public PlayerProgress withPassivePoints(int points) {
-        return copy(xp, skillPoints, Math.max(0, points), minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana);
+        return copy(xp, skillPoints, Math.max(0, points), minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress addPassivePoints(int amount) {
@@ -84,27 +99,35 @@ public record PlayerProgress(
     }
 
     public PlayerProgress withMinors(Map<String, Integer> minors) {
-        return copy(xp, skillPoints, passivePoints, minors, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana);
+        return copy(xp, skillPoints, passivePoints, minors, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withPassives(Set<String> passives) {
-        return copy(xp, skillPoints, passivePoints, minorLevels, passives, unlockedActives, equippedActives, cooldownEnds, mana);
+        return copy(xp, skillPoints, passivePoints, minorLevels, passives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withUnlockedActives(Set<String> actives) {
-        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, actives, equippedActives, cooldownEnds, mana);
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, actives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withEquipped(List<String> equipped) {
-        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equipped, cooldownEnds, mana);
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equipped, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withCooldowns(Map<String, Long> cooldowns) {
-        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldowns, mana);
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldowns, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     public PlayerProgress withMana(float value) {
-        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, Math.max(0, value));
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, Math.max(0, value), activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
+    }
+
+    public PlayerProgress withQuests(Set<String> active, Set<String> completed, Map<String, Integer> progress, long day) {
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, active, completed, progress, day, monarchDefeated);
+    }
+
+    public PlayerProgress withMonarchDefeated(boolean value) {
+        return copy(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, value);
     }
 
     public boolean hasPassive(String id) {
@@ -134,55 +157,51 @@ public record PlayerProgress(
         return Math.max(0L, cooldownEnds.getOrDefault(activeId, 0L) - gameTime);
     }
 
+    public int questCount(String questId) {
+        return questProgress.getOrDefault(questId, 0);
+    }
+
     public PlayerProgress resetPassivesAndActives(int refundedPassivePoints) {
-        return copy(xp, skillPoints, refundedPassivePoints, minorLevels, Set.of(), Set.of(), List.of(), Map.of(), mana);
+        return copy(xp, skillPoints, refundedPassivePoints, minorLevels, Set.of(), Set.of(), List.of(), Map.of(), mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
     private static PlayerProgress copy(
-            int xp,
-            int skillPoints,
-            int passivePoints,
-            Map<String, Integer> minorLevels,
-            Set<String> selectedPassives,
-            Set<String> unlockedActives,
-            List<String> equippedActives,
-            Map<String, Long> cooldownEnds,
-            float mana
+            int xp, int skillPoints, int passivePoints,
+            Map<String, Integer> minorLevels, Set<String> selectedPassives, Set<String> unlockedActives,
+            List<String> equippedActives, Map<String, Long> cooldownEnds, float mana,
+            Set<String> activeQuests, Set<String> completedQuests, Map<String, Integer> questProgress,
+            long dailyQuestDay, boolean monarchDefeated
     ) {
-        return new PlayerProgress(
-                xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives, equippedActives, cooldownEnds, mana
-        );
+        return new PlayerProgress(xp, skillPoints, passivePoints, minorLevels, selectedPassives, unlockedActives,
+                equippedActives, cooldownEnds, mana, activeQuests, completedQuests, questProgress, dailyQuestDay, monarchDefeated);
     }
 
-    private static void write(RegistryFriendlyByteBuf buf, PlayerProgress progress) {
-        ByteBufCodecs.VAR_INT.encode(buf, progress.xp);
-        ByteBufCodecs.VAR_INT.encode(buf, progress.skillPoints);
-        ByteBufCodecs.VAR_INT.encode(buf, progress.passivePoints);
-        ByteBufCodecs.VAR_INT.encode(buf, progress.minorLevels.size());
-        progress.minorLevels.forEach((k, v) -> {
-            ByteBufCodecs.STRING_UTF8.encode(buf, k);
-            ByteBufCodecs.VAR_INT.encode(buf, v);
-        });
-        writeStrings(buf, progress.selectedPassives);
-        writeStrings(buf, progress.unlockedActives);
-        writeStringList(buf, progress.equippedActives);
-        ByteBufCodecs.VAR_INT.encode(buf, progress.cooldownEnds.size());
-        progress.cooldownEnds.forEach((k, v) -> {
+    private static void write(RegistryFriendlyByteBuf buf, PlayerProgress p) {
+        ByteBufCodecs.VAR_INT.encode(buf, p.xp);
+        ByteBufCodecs.VAR_INT.encode(buf, p.skillPoints);
+        ByteBufCodecs.VAR_INT.encode(buf, p.passivePoints);
+        writeIntMap(buf, p.minorLevels);
+        writeStrings(buf, p.selectedPassives);
+        writeStrings(buf, p.unlockedActives);
+        writeStringList(buf, p.equippedActives);
+        ByteBufCodecs.VAR_INT.encode(buf, p.cooldownEnds.size());
+        p.cooldownEnds.forEach((k, v) -> {
             ByteBufCodecs.STRING_UTF8.encode(buf, k);
             buf.writeLong(v);
         });
-        buf.writeFloat(progress.mana);
+        buf.writeFloat(p.mana);
+        writeStrings(buf, p.activeQuests);
+        writeStrings(buf, p.completedQuests);
+        writeIntMap(buf, p.questProgress);
+        buf.writeLong(p.dailyQuestDay);
+        buf.writeBoolean(p.monarchDefeated);
     }
 
     private static PlayerProgress read(RegistryFriendlyByteBuf buf) {
         int xp = ByteBufCodecs.VAR_INT.decode(buf);
-        int skillPoints = ByteBufCodecs.VAR_INT.decode(buf);
-        int passivePoints = ByteBufCodecs.VAR_INT.decode(buf);
-        int minorCount = ByteBufCodecs.VAR_INT.decode(buf);
-        Map<String, Integer> minors = new HashMap<>();
-        for (int i = 0; i < minorCount; i++) {
-            minors.put(ByteBufCodecs.STRING_UTF8.decode(buf), ByteBufCodecs.VAR_INT.decode(buf));
-        }
+        int sp = ByteBufCodecs.VAR_INT.decode(buf);
+        int pp = ByteBufCodecs.VAR_INT.decode(buf);
+        Map<String, Integer> minors = readIntMap(buf);
         Set<String> passives = readStringSet(buf);
         Set<String> unlocked = readStringSet(buf);
         List<String> equipped = readStringList(buf);
@@ -192,7 +211,29 @@ public record PlayerProgress(
             cds.put(ByteBufCodecs.STRING_UTF8.decode(buf), buf.readLong());
         }
         float mana = buf.readFloat();
-        return new PlayerProgress(xp, skillPoints, passivePoints, minors, passives, unlocked, equipped, cds, mana);
+        Set<String> activeQ = readStringSet(buf);
+        Set<String> doneQ = readStringSet(buf);
+        Map<String, Integer> qProg = readIntMap(buf);
+        long day = buf.readLong();
+        boolean monarch = buf.readBoolean();
+        return new PlayerProgress(xp, sp, pp, minors, passives, unlocked, equipped, cds, mana, activeQ, doneQ, qProg, day, monarch);
+    }
+
+    private static void writeIntMap(RegistryFriendlyByteBuf buf, Map<String, Integer> map) {
+        ByteBufCodecs.VAR_INT.encode(buf, map.size());
+        map.forEach((k, v) -> {
+            ByteBufCodecs.STRING_UTF8.encode(buf, k);
+            ByteBufCodecs.VAR_INT.encode(buf, v);
+        });
+    }
+
+    private static Map<String, Integer> readIntMap(RegistryFriendlyByteBuf buf) {
+        int n = ByteBufCodecs.VAR_INT.decode(buf);
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(ByteBufCodecs.STRING_UTF8.decode(buf), ByteBufCodecs.VAR_INT.decode(buf));
+        }
+        return map;
     }
 
     private static void writeStrings(RegistryFriendlyByteBuf buf, Set<String> values) {

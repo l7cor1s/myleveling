@@ -1,8 +1,8 @@
 # MyLeveling
 
-NeoForge **1.21.1** progression mod: ranks, Skill/Passive points, 6 skill branches, actives with HUD cooldowns.
+NeoForge **1.21.1** progression mod: ranks, Skill/Passive points, six skill branches with actives D–S, quest journal, bosses, ranked loot, and a Rank S Gate endgame.
 
-Works standalone. Soft bonuses when Create / Iron's Spells / Epic Fight / Apotheosis are present.
+Works standalone. Soft bonuses when Create / Iron's Spells / Epic Fight / Apotheosis / MCA are present.
 
 ## Progression
 
@@ -15,21 +15,31 @@ Works standalone. Soft bonuses when Create / Iron's Spells / Epic Fight / Apothe
 | A | 150 000 | 3 |
 | S | 400 000 | 3 |
 
-- **Skill Points (SP):** 1 every **400 XP** → small permanent upgrades (HP, speed, luck, damage, mining…)
-- **Passive Points (PP):** on rank-up → choose passives (1 of 2 per rank/branch) and unlock actives
-- Mob XP tiers: Normal / Strong / Boss (datapack tags + health fallbacks)
+- **Skill Points (SP):** 1 every **400 XP** → small permanent upgrades
+- **Passive Points (PP):** on rank-up → passives (1 of 2 per rank/branch) and actives
+- **End goal:** reach Rank S, open a Rank Gate with a Gate Key, defeat the Gate Monarch
 
-## Branches
+## Skills & HUD
 
-Melee · Ranged · Magic · Engineering · Survival · Hunter
+- Actives on every rank D–S per branch (max **2** equipped)
+- Left-center HUD icons (R/F) with cooldowns; quest progress listed below
+- GUI (**K**): Quests tab + branches + SP shop + reset
+- Example ult: **Hammer Strike** (Therizla-style AoE + knockback + slow)
 
-Each branch: passives D→S (pick one of two) + actives at C and A.
+## Quests
 
-## Controls
+Daily, repeatable, chain, boss, mob, gather, villager/MCA soft quests. Accept / turn-in from the Quests tab. Rewards: XP, PP, ranked loot.
 
-- **K** — System GUI
-- **R / F** — Active slots 1 / 2 (HUD above hotbar shows cooldown)
-- Reset button in GUI (10 gold **or** 5 levels) refunds PP
+## Bosses & loot
+
+- Mini: Shadow Scout (D–C) · Mid: Rank Warden (B–A) · Final: Gate Monarch (S+)
+- Ranked weapons / armor / accessories E–S with bleed, lifesteal, pierce, block/reflect, accessory effects
+
+## Controls & commands
+
+- **K** — System GUI · **R / F** — active slots
+- `/rank` · `/skills`
+- `/myleveling spawn <scout|warden|monarch>` · `/myleveling givekey` (op)
 
 ## Build
 
@@ -37,4 +47,4 @@ Each branch: passives D→S (pick one of two) + actives at C and A.
 ./gradlew build
 ```
 
-Jar: `build/libs/myleveling-0.4.0.jar`
+Jar: `build/libs/myleveling-0.5.0.jar`

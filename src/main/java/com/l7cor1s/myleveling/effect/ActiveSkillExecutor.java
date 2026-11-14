@@ -62,10 +62,12 @@ public final class ActiveSkillExecutor {
             return PlayerSkillData.Result.ALREADY;
         }
 
-        // Mana cost for magic actives.
         float manaCost = switch (activeId) {
+            case "magic_bolt" -> 4.0f;
             case "magic_blink" -> 6.0f;
+            case "magic_barrier" -> 8.0f;
             case "magic_nova" -> 12.0f;
+            case "magic_meteor" -> 16.0f;
             default -> 0.0f;
         };
         if (manaCost > 0 && progress.mana() < manaCost) {
@@ -74,18 +76,36 @@ public final class ActiveSkillExecutor {
         }
 
         boolean ok = switch (activeId) {
+            case "melee_slash" -> slash(player);
             case "melee_dash" -> dashStrike(player);
+            case "melee_leap" -> leap(player);
             case "melee_smash" -> smash(player);
+            case "melee_hammer" -> hammerUlt(player);
+            case "ranged_trap" -> rangedTrap(player);
             case "ranged_volley" -> volleyBuff(player);
+            case "ranged_rain" -> arrowRain(player);
             case "ranged_snipe" -> snipeBuff(player);
+            case "ranged_barrage" -> barrage(player);
+            case "magic_bolt" -> magicBolt(player);
             case "magic_blink" -> blink(player);
+            case "magic_barrier" -> magicBarrier(player);
             case "magic_nova" -> nova(player);
+            case "magic_meteor" -> meteor(player);
+            case "eng_scan" -> engScan(player);
             case "eng_haste" -> engHaste(player);
+            case "eng_turret" -> engTurret(player);
             case "eng_construct" -> construct(player);
+            case "eng_overload" -> engOverload(player);
+            case "surv_bandage" -> bandage(player);
             case "surv_bulwark" -> bulwark(player);
+            case "surv_camp" -> camp(player);
             case "surv_shield" -> shield(player);
+            case "surv_immortal" -> immortal(player);
+            case "hunt_track" -> huntTrack(player);
             case "hunt_mark" -> markBoss(player);
+            case "hunt_trap" -> huntTrap(player);
             case "hunt_wrath" -> wrath(player);
+            case "hunt_execute" -> huntExecute(player);
             default -> false;
         };
 
@@ -288,5 +308,196 @@ public final class ActiveSkillExecutor {
         WRATH_UNTIL.put(player.getUUID(), player.level().getGameTime() + 12L * 20L);
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 12 * 20, 1));
         return true;
+    }
+
+    private static boolean slash(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        float dmg = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.15f;
+        for (LivingEntity t : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(2.2),
+                e -> e != player && e.isAlive())) {
+            t.hurt(player.damageSources().playerAttack(player), dmg);
+        }
+        return true;
+    }
+
+    private static boolean leap(ServerPlayer player) {
+        Vec3 look = player.getLookAngle().normalize();
+        player.setDeltaMovement(look.x * 1.1, 0.85, look.z * 1.1);
+        player.hurtMarked = true;
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 3 * 20, 0));
+        return true;
+    }
+
+    /** Therizla-style hammer ult: AoE damage + knockback + slow. */
+    private static boolean hammerUlt(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        float dmg = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * 2.6f + 6.0f;
+        for (LivingEntity t : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(5.0),
+                e -> e != player && e.isAlive())) {
+            t.hurt(player.damageSources().playerAttack(player), dmg);
+            Vec3 push = t.position().subtract(player.position()).normalize().scale(1.6).add(0, 0.55, 0);
+            t.setDeltaMovement(t.getDeltaMovement().add(push));
+            t.hurtMarked = true;
+            t.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
+        }
+        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0, 0, 0, 0);
+        level.sendParticles(ParticleTypes.CRIT, player.getX(), player.getY() + 0.2, player.getZ(), 40, 2.0, 0.3, 2.0, 0.2);
+        return true;
+    }
+
+    private static boolean rangedTrap(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 6 * 20, 0));
+        return true;
+    }
+
+    private static boolean arrowRain(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        float dmg = 5.0f + (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.5f;
+        for (LivingEntity t : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(8.0),
+                e -> e != player && e.isAlive() && player.hasLineOfSight(e))) {
+            t.hurt(player.damageSources().playerAttack(player), dmg);
+            t.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
+        }
+        return true;
+    }
+
+    private static boolean barrage(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 12 * 20, 2));
+        player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 12 * 20, 0));
+        return arrowRain(player);
+    }
+
+    private static boolean magicBolt(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        LivingEntity target = findLookTarget(player, 16);
+        if (target == null) {
+            return false;
+        }
+        target.hurt(player.damageSources().magic(), 7.0f);
+        level.sendParticles(ParticleTypes.WITCH, target.getX(), target.getY() + 1, target.getZ(), 12, 0.3, 0.4, 0.3, 0.02);
+        return true;
+    }
+
+    private static boolean magicBarrier(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 8 * 20, 1));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 8 * 20, 0));
+        return true;
+    }
+
+    private static boolean meteor(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        float dmg = 14.0f + (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        for (LivingEntity t : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(7.0),
+                e -> e != player && e.isAlive())) {
+            t.hurt(player.damageSources().magic(), dmg);
+            t.igniteForTicks(60);
+        }
+        level.sendParticles(ParticleTypes.LAVA, player.getX(), player.getY() + 2, player.getZ(), 30, 2.5, 1.0, 2.5, 0.1);
+        return true;
+    }
+
+    private static boolean engScan(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 15 * 20, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 10 * 20, 0));
+        return true;
+    }
+
+    private static boolean engTurret(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 10 * 20, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 10 * 20, 1));
+        return true;
+    }
+
+    private static boolean engOverload(ServerPlayer player) {
+        int amp = CompatMods.isLoaded(CompatMods.CREATE) ? 3 : 2;
+        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 16 * 20, amp));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 16 * 20, 1));
+        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 16 * 20, 1));
+        return true;
+    }
+
+    private static boolean bandage(ServerPlayer player) {
+        player.heal(6.0f);
+        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 5 * 20, 0));
+        return true;
+    }
+
+    private static boolean camp(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 1, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 8 * 20, 0));
+        player.getFoodData().eat(4, 0.4f);
+        return true;
+    }
+
+    private static boolean immortal(ServerPlayer player) {
+        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 6 * 20, 3));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6 * 20, 2));
+        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 6 * 20, 2));
+        return true;
+    }
+
+    private static boolean huntTrack(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(32),
+                ent -> ent != player && ent.isAlive() && !(ent instanceof Player))) {
+            e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 8 * 20, 0));
+        }
+        return true;
+    }
+
+    private static boolean huntTrap(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        for (LivingEntity t : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(5.0),
+                e -> e != player && e.isAlive())) {
+            t.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
+            t.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0));
+        }
+        return true;
+    }
+
+    private static boolean huntExecute(ServerPlayer player) {
+        WRATH_UNTIL.put(player.getUUID(), player.level().getGameTime() + 10L * 20L);
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 10 * 20, 2));
+        return markBoss(player) || true;
+    }
+
+    private static LivingEntity findLookTarget(ServerPlayer player, double range) {
+        Vec3 start = player.getEyePosition();
+        Vec3 end = start.add(player.getLookAngle().scale(range));
+        LivingEntity best = null;
+        double bestDist = range * range;
+        if (!(player.level() instanceof ServerLevel level)) {
+            return null;
+        }
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(range),
+                ent -> ent != player && ent.isAlive())) {
+            if (!player.hasLineOfSight(e)) {
+                continue;
+            }
+            double d = e.distanceToSqr(player);
+            if (d < bestDist) {
+                // rough cone check
+                Vec3 to = e.getEyePosition().subtract(start).normalize();
+                if (to.dot(player.getLookAngle()) > 0.85) {
+                    bestDist = d;
+                    best = e;
+                }
+            }
+        }
+        return best;
     }
 }
