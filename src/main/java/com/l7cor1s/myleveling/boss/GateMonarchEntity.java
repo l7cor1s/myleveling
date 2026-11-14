@@ -1,5 +1,9 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.SimpleGeoBoss;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.network.ProgressSync;
 import com.l7cor1s.myleveling.progress.PlayerProgress;
@@ -30,7 +34,8 @@ import net.minecraft.server.level.ServerBossEvent;
 /**
  * Final S+ gate boss with 3 phases.
  */
-public class GateMonarchEntity extends Monster {
+public class GateMonarchEntity extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = SimpleGeoBoss.cache(this);
     private final ServerBossEvent bossEvent = new ServerBossEvent(
             Component.translatable("entity.myleveling.gate_monarch"),
             BossEvent.BossBarColor.PURPLE,
@@ -143,5 +148,15 @@ public class GateMonarchEntity extends Monster {
     public void remove(RemovalReason reason) {
         super.remove(reason);
         this.bossEvent.removeAllPlayers();
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        SimpleGeoBoss.registerWalkAttack(this, controllers);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

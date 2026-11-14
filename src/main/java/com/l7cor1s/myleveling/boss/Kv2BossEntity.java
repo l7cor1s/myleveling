@@ -1,5 +1,6 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.GeoBossAnim;
 import com.l7cor1s.myleveling.item.ModItems;
 import com.l7cor1s.myleveling.sound.ModSounds;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,11 +31,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * Meme large boss: KV-2 — slow howitzer tank with KorbenDallas-style voice lines.
  */
-public class Kv2BossEntity extends Monster {
+public class Kv2BossEntity extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+
     private static final EntityDataAccessor<Integer> ANIM =
             SynchedEntityData.defineId(Kv2BossEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PHASE =
@@ -176,6 +183,7 @@ public class Kv2BossEntity extends Monster {
                 this.entityData.set(ANIM, BossAnimState.IDLE.ordinal());
                 pending = BossAnimState.IDLE;
                 if (done == BossAnimState.CAST || done == BossAnimState.WINDUP) {
+                    this.triggerAnim("fire", "fire");
                     fireHowitzer();
                 }
             }
@@ -313,5 +321,16 @@ public class Kv2BossEntity extends Monster {
     public void remove(RemovalReason reason) {
         super.remove(reason);
         this.bossEvent.removeAllPlayers();
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(GeoBossAnim.kv2Controller(this));
+        controllers.add(GeoBossAnim.kv2FireController(this));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

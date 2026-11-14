@@ -1,5 +1,9 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.SimpleGeoBoss;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -21,7 +25,8 @@ import net.minecraft.world.level.Level;
 /**
  * Weak summoned helper — short lifespan, low stats.
  */
-public class ShadowMinionEntity extends Monster {
+public class ShadowMinionEntity extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = SimpleGeoBoss.cache(this);
     private static final EntityDataAccessor<Integer> KIND =
             SynchedEntityData.defineId(ShadowMinionEntity.class, EntityDataSerializers.INT);
 
@@ -116,5 +121,15 @@ public class ShadowMinionEntity extends Monster {
         super.readAdditionalSaveData(tag);
         this.entityData.set(KIND, tag.getInt("Kind"));
         lifeTicks = tag.contains("Life") ? tag.getInt("Life") : lifeTicks;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        SimpleGeoBoss.registerWalkAttack(this, controllers);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

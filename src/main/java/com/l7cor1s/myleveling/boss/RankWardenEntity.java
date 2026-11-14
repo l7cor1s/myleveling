@@ -1,5 +1,9 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.SimpleGeoBoss;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,7 +27,8 @@ import net.minecraft.world.level.Level;
 /**
  * Mid boss (B–A): two phases — enrage under 50% HP.
  */
-public class RankWardenEntity extends Monster {
+public class RankWardenEntity extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = SimpleGeoBoss.cache(this);
     private boolean enraged;
 
     public RankWardenEntity(EntityType<? extends RankWardenEntity> type, Level level) {
@@ -82,5 +87,15 @@ public class RankWardenEntity extends Monster {
         if (this.getRandom().nextFloat() < 0.5f) {
             this.spawnAtLocation(new ItemStack(com.l7cor1s.myleveling.item.ModItems.GATE_KEY.get()));
         }
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        SimpleGeoBoss.registerWalkAttack(this, controllers);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

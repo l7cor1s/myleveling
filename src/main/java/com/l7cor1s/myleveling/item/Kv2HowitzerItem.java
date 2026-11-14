@@ -1,8 +1,11 @@
 package com.l7cor1s.myleveling.item;
 
+import com.l7cor1s.myleveling.MyLeveling;
 import com.l7cor1s.myleveling.entity.DynamiteProjectile;
 import com.l7cor1s.myleveling.sound.ModSounds;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
@@ -15,18 +18,57 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.model.DefaultedItemGeoModel;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * KV-2 unique loot: chargeable howitzer that fires dynamite with a WoT-style aim circle.
  */
-public class Kv2HowitzerItem extends Item {
+public class Kv2HowitzerItem extends Item implements GeoItem {
     public static final int MAX_CHARGE = 40;
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("misc.idle");
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Kv2HowitzerItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private GeoItemRenderer<Kv2HowitzerItem> renderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+                if (this.renderer == null) {
+                    this.renderer = new GeoItemRenderer<>(new DefaultedItemGeoModel<>(
+                            ResourceLocation.fromNamespaceAndPath(MyLeveling.MOD_ID, "kv2_howitzer")));
+                }
+                return this.renderer;
+            }
+        });
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "howitzer", 5,
+                state -> state.setAndContinue(IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     @Override
@@ -55,9 +97,7 @@ public class Kv2HowitzerItem extends Item {
 
         if (!level.isClientSide()) {
             DynamiteProjectile shell = new DynamiteProjectile(level, player);
-            // Accuracy: longer charge = less spread (smaller circle)
             float spread = (1.0f - charge) * 12.0f;
-            Vec3 look = player.getLookAngle();
             float yawJitter = (player.getRandom().nextFloat() - 0.5f) * spread;
             float pitchJitter = (player.getRandom().nextFloat() - 0.5f) * spread;
             shell.shootFromRotation(player, player.getXRot() + pitchJitter, player.getYRot() + yawJitter, 0.0f, 1.1f + charge * 0.5f, 0.5f);

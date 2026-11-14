@@ -9,9 +9,16 @@ displayName="${mod_name}"
 authors="l7cor1s"
 description='''
 Full progression for NeoForge 1.21.1: ranks, SP/PP, actives D–S, quest journal,
-bosses with custom visuals (KV-2 tank), ranked E–S gear, Curios artifacts,
+GeckoLib bosses (KV-2 tank + attack anims), ranked E–S gear, Curios artifacts,
 light Solo Leveling GUI, Rank Gate endgame. Soft Create / ISS / EF / Apotheosis / MCA / Curios.
 '''
+
+[[dependencies.${mod_id}]]
+    modId="geckolib"
+    type="required"
+    versionRange="[4.7,)"
+    ordering="AFTER"
+    side="BOTH"
 
 [[dependencies.${mod_id}]]
     modId="neoforge"

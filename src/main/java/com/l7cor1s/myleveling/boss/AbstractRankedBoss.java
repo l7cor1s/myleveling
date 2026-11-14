@@ -1,5 +1,6 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.GeoBossAnim;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
@@ -28,11 +29,16 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * Shared ranked-boss framework: dialogue, phases, attack telegraphs, boss bar, loot.
  */
-public abstract class AbstractRankedBoss extends Monster {
+public abstract class AbstractRankedBoss extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Integer> ANIM =
             SynchedEntityData.defineId(AbstractRankedBoss.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PHASE =
@@ -356,5 +362,16 @@ public abstract class AbstractRankedBoss extends Monster {
     public void remove(RemovalReason reason) {
         super.remove(reason);
         this.bossEvent.removeAllPlayers();
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(GeoBossAnim.walkIdle(this));
+        controllers.add(GeoBossAnim.combat(this, AbstractRankedBoss::animState));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

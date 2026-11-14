@@ -1,5 +1,9 @@
 package com.l7cor1s.myleveling.boss;
 
+import com.l7cor1s.myleveling.geo.SimpleGeoBoss;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -20,7 +24,8 @@ import net.minecraft.world.level.Level;
 /**
  * Mini-boss (D–C): fast shadow scout.
  */
-public class ShadowScoutEntity extends Monster {
+public class ShadowScoutEntity extends Monster implements GeoEntity {
+    private final AnimatableInstanceCache geoCache = SimpleGeoBoss.cache(this);
     private boolean announced;
 
     public ShadowScoutEntity(EntityType<? extends ShadowScoutEntity> type, Level level) {
@@ -66,5 +71,15 @@ public class ShadowScoutEntity extends Monster {
         if (this.getRandom().nextFloat() < 0.35f) {
             this.spawnAtLocation(new ItemStack(com.l7cor1s.myleveling.item.ModItems.RANK_D_RING.get()));
         }
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        SimpleGeoBoss.registerWalkAttack(this, controllers);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }
